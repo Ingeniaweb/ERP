@@ -153,7 +153,7 @@ if (! empty($conf->global->MAIN_SEARCH_FORM_ON_HOME_AREAS))     // This is usele
 /*
  * Statistics
  */
-include DOL_DOCUMENT_ROOT.'/projet/graph_opportunities.inc.php';
+//include DOL_DOCUMENT_ROOT.'/projet/graph_opportunities.inc.php';
 
 
 // List of draft projects
@@ -247,11 +247,11 @@ if ($resql)
 else dol_print_error($db);
 
 
-// Open project per thirdparty
+// Proyectos abiertos por cliente
 print '<div class="div-table-responsive-no-min">';
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre("OpenedProjectsByThirdparties",$_SERVER["PHP_SELF"],"s.nom","","",'',$sortfield,$sortorder);
+print_liste_field_titre("Proyectos abiertos de clientes",$_SERVER["PHP_SELF"],"s.nom","","",'',$sortfield,$sortorder);
 print_liste_field_titre("NbOfProjects","","","","",'align="right"',$sortfield,$sortorder);
 print "</tr>\n";
 
@@ -287,7 +287,7 @@ if ( $resql )
 		}
 		else
 		{
-			print $langs->trans("OthersNotLinkedToThirdParty");
+			print "Otros, no enlazados a un cliente";
 		}
 		print '</td>';
 		print '<td align="right">';

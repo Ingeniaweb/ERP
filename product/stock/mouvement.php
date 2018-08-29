@@ -719,7 +719,7 @@ if ($resql)
     print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 
     // Lignes des champs de filtre
-    print '<tr class="liste_titre_filter">';
+    print '<tr class="liste_titre_filter" style="display: none;">';
     if (! empty($arrayfields['m.rowid']['checked']))
     {
 	    // Ref

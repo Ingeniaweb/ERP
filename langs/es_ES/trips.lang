@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - trips
+# language file - Source file is en_US - trips
 ShowExpenseReport=Ver informe de gastos
 Trips=Gastos
 TripsAndExpenses=Gastos
@@ -60,7 +60,7 @@ EX_SUM=Mantenimiento
 EX_SUO=Material de oficina
 EX_CAR=Alquiler de vehículos
 EX_DOC=Documentación
-EX_CUR=Los clientes reciben
+EX_CUR=Los Clientes reciben
 EX_OTR=Otros receptores
 EX_POS=Franqueo
 EX_CAM=Mantenimiento y reparación

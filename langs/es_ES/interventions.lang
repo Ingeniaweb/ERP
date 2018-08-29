@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - interventions
+# language file - Source file is en_US - interventions
 Intervention=Intervención
 Interventions=Intervenciones
 InterventionCard=Ficha intervención
@@ -21,7 +21,7 @@ ConfirmModifyIntervention=¿Está seguro de querer modificar esta intervención?
 ConfirmDeleteInterventionLine=¿Está seguro de querer eliminar esta linea?
 ConfirmCloneIntervention=¿Está seguro de querer clonar esta intervención?
 NameAndSignatureOfInternalContact=Nombre y firma del participante:
-NameAndSignatureOfExternalContact=Nombre y firma del cliente:
+NameAndSignatureOfExternalContact=Nombre y firma del Cliente:
 DocumentModelStandard=Documento modelo estándar para intervenciones
 InterventionCardsAndInterventionLines=Fichas y líneas de intervención
 InterventionClassifyBilled=Clasificar "Facturada"
@@ -42,7 +42,7 @@ DraftFichinter=Intervenciones borrador
 LastModifiedInterventions=Últimas %s intervenciones modificadas
 FichinterToProcess=Intervenciones a procesar
 ##### Types de contacts #####
-TypeContact_fichinter_external_CUSTOMER=Contacto cliente seguimiento intervención
+TypeContact_fichinter_external_CUSTOMER=Contacto Cliente seguimiento intervención
 # Modele numérotation
 PrintProductsOnFichinter=Imprimir también líneas de tipo "producto" (no solamente servicios) en las fichas de intervención
 PrintProductsOnFichinterDetails=Intervenciones generadas desde pedidos

@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - marges
+# language file - Source file is en_US - marges
 
 Margin=Margen
 Margins=Márgenes
@@ -14,7 +14,7 @@ margin=Gestión de márgenes
 margesSetup=Configuración de la gestión de márgenes
 MarginDetails=Detalles de márgenes realizados
 ProductMargins=Márgenes por producto
-CustomerMargins=Márgenes por cliente
+CustomerMargins=Márgenes por Cliente
 SalesRepresentativeMargins=Margenes por comercial
 UserMargins=Márgenes del usuario
 ProductService=Producto o servicio
@@ -41,4 +41,4 @@ rateMustBeNumeric=El margen  debe ser un valor numérico
 markRateShouldBeLesserThan100=El margen tiene que ser menor que 100
 ShowMarginInfos=Mostrar info de márgenes
 CheckMargins=Detalles de márgenes
-MarginPerSaleRepresentativeWarning=El informe de margen por usuario usa el enlace entre terceros y comerciales para calcular el margen de cada usuario. Debido a que algunos terceros pueden no estar vinculados a un comercial y algunos terceros pueden estar relacionados con varios usuarios, algunos márgenes pueden no aparecer en este informe o podrá aparecer en varias líneas diferentes.
+MarginPerSaleRepresentativeWarning=El informe de margen por usuario usa el enlace entre Clientes y comerciales para calcular el margen de cada usuario. Debido a que algunos Clientes pueden no estar vinculados a un comercial y algunos Clientes pueden estar relacionados con varios usuarios, algunos márgenes pueden no aparecer en este informe o podrá aparecer en varias líneas diferentes.

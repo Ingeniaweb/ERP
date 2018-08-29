@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - contracts
+# language file - Source file is en_US - contracts
 ContractsArea=Área contratos
 ListOfContracts=Listado de contratos
 AllContracts=Todos los contratos
@@ -72,16 +72,16 @@ ActivateAllContracts=Activar todas las líneas del contrato
 CloseAllContracts=Cerrar todos los servicios
 DeleteContractLine=Eliminar línea de contrato
 ConfirmDeleteContractLine=¿Está seguro de querer eliminar esta línea de contrato de servicio?
-MoveToAnotherContract=Mover el servicio a otro contrato de este tercero.
+MoveToAnotherContract=Mover el servicio a otro contrato de este Cliente.
 ConfirmMoveToAnotherContract=He elegido el contrato y confirmo el cambio de servicio en el presente contrato.
-ConfirmMoveToAnotherContractQuestion=Elija cualquier otro contrato del mismo tercero, ¿desea mover este servicio?
+ConfirmMoveToAnotherContractQuestion=Elija cualquier otro contrato del mismo Cliente, ¿desea mover este servicio?
 PaymentRenewContractId=Renovación servicio (número %s)
 ExpiredSince=Expirado desde el
 NoExpiredServices=Sin servicios activos expirados
 ListOfServicesToExpireWithDuration=Listado de servicios activos a expirar en %s días
 ListOfServicesToExpireWithDurationNeg=Listado de servicios expirados más de %s días
 ListOfServicesToExpire=Listado de servicios activos a expirar
-NoteListOfYourExpiredServices=Este listado contiene solamente los servicios de contratos de terceros de los que usted es comercial
+NoteListOfYourExpiredServices=Este listado contiene solamente los servicios de contratos de Clientes de los que usted es comercial
 StandardContractsTemplate=Modelo de contrato estandar 
 ContactNameAndSignature=Para %s, nombre y firma:
 OnlyLinesWithTypeServiceAreUsed=Solo serán clonadas las líneas del tipo "Servicio"
@@ -92,6 +92,6 @@ SendContractRef=Información del contrato __REF__
 ##### Types de contacts #####
 TypeContact_contrat_internal_SALESREPSIGN=Comercial firmante del contrato
 TypeContact_contrat_internal_SALESREPFOLL=Comercial seguimiento del contrato
-TypeContact_contrat_external_BILLING=Contacto cliente de facturación del contrato
-TypeContact_contrat_external_CUSTOMER=Contacto cliente seguimiento del contrato
-TypeContact_contrat_external_SALESREPSIGN=Contacto cliente firmante del contrato
+TypeContact_contrat_external_BILLING=Contacto Cliente de facturación del contrato
+TypeContact_contrat_external_CUSTOMER=Contacto Cliente seguimiento del contrato
+TypeContact_contrat_external_SALESREPSIGN=Contacto Cliente firmante del contrato

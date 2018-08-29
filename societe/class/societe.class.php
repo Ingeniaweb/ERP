@@ -96,7 +96,7 @@ class Societe extends CommonObject
 	 * @var string
 	 */
 	public $name_alias;
-
+	public $prueba;
 	public $particulier;
 	public $address;
 	public $zip;
@@ -821,8 +821,13 @@ class Societe extends CommonObject
 		$this->code_compta_fournisseur=trim($this->code_compta_fournisseur);
 
 		// Check parameters. More tests are done later in the ->verify()
+		
+
+		
+
 		if (! is_numeric($this->client) && ! is_numeric($this->fournisseur))
 		{
+
 			$langs->load("errors");
 			$this->error = $langs->trans("BadValueForParameterClientOrSupplier");
 			return -1;
@@ -984,7 +989,7 @@ class Societe extends CommonObject
 			$sql .= ", fk_multicurrency = ".(int) $this->fk_multicurrency;
 			$sql .= ", multicurrency_code = '".$this->db->escape($this->multicurrency_code)."'";
 			$sql .= " WHERE rowid = '" . $id ."'";
-
+			//echo $sql;
 			$resql=$this->db->query($sql);
 			if ($resql)
 			{
@@ -1027,7 +1032,7 @@ class Societe extends CommonObject
 						}
 						else if ($result < 0)
 						{
-							$this->error=$lmember->error;
+							$this->error=$lmember->error." consulta= ".$sql;
 							$error++;
 						}
 					}
@@ -1083,7 +1088,7 @@ class Societe extends CommonObject
 				}
 				else
 				{
-					$this->error = $this->db->lasterror();
+					$this->error = $this->db->lasterror()." 2consulta= ".$sql;
 					$result = -2;
 				}
 				$this->db->rollback();
@@ -1093,7 +1098,7 @@ class Societe extends CommonObject
 		else
 	   {
 			$this->db->rollback();
-			dol_syslog(get_class($this)."::Update fails verify ".join(',',$this->errors), LOG_WARNING);
+			dol_syslog(get_class($this)."::Update fails verify ".join(',',$this->errors." sql= ".$sql), LOG_WARNING);
 			return -3;
 		}
 	}
@@ -1166,7 +1171,7 @@ class Societe extends CommonObject
 		if ($idprof5) $sql .= " AND s.idprof5 = '".$this->db->escape($idprof5)."'";
 		if ($idprof6) $sql .= " AND s.idprof6 = '".$this->db->escape($idprof6)."'";
 		if ($email)   $sql .= " AND s.email = '".$this->db->escape($email)."'";
-
+		//echo $sql."<br>";
 		$resql=$this->db->query($sql);
 		if ($resql)
 		{
@@ -1304,6 +1309,7 @@ class Societe extends CommonObject
 
 				// Retreive all extrafield for thirdparty
 			   	$this->fetch_optionals();
+			   	//var_dump($this);
 			}
 			else
 			{

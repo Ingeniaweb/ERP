@@ -58,7 +58,7 @@ if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
 	    	$labelstatus = '';
 
 			$code = dol_getIdFromCode($db, $status, 'c_lead_status', 'rowid', 'code');
-	        if ($code) $labelstatus = $langs->trans("OppStatus".$code);
+	        if ($code) $labelstatus = $langs->trans($code);
 	        if (empty($labelstatus)) $labelstatus=$listofopplabel[$status];
 
 	        //$labelstatus .= ' ('.$langs->trans("Coeff").': '.price2num($listofoppstatus[$status]).')';

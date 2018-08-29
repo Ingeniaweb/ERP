@@ -1,4 +1,4 @@
-# Dolibarr language file - en_US - Accounting Expert
+# language file - en_US - Accounting Expert
 ACCOUNTING_EXPORT_SEPARATORCSV=Separador de columnas en el archivo de exportación
 ACCOUNTING_EXPORT_DATE=Formato de fecha en el archivo de exportación
 ACCOUNTING_EXPORT_PIECE=Exportar el número de asiento
@@ -38,7 +38,7 @@ DetailByAccount=Ver detalles por cuenta
 AccountWithNonZeroValues=Cuentas con valores no cero
 ListOfAccounts=Lista de cuentas
 
-MainAccountForCustomersNotDefined=Cuenta contable para clientes no definida en la configuración
+MainAccountForCustomersNotDefined=Cuenta contable para Clientes no definida en la configuración
 MainAccountForSuppliersNotDefined=Cuenta contable para proveedores no definida en la configuración
 MainAccountForUsersNotDefined=Cuenta contable para usuarios no definida en la configuración
 MainAccountForVatPaymentNotDefined=Cuenta contable para IVA no definida en la configuración
@@ -88,7 +88,7 @@ MenuLoanAccounts=Cuentas de préstamos
 MenuProductsAccounts=Cuentas contables de productos
 ProductsBinding=Cuentas de productos
 Ventilation=Contabilizar
-CustomersVentilation=Contabilizar facturas a clientes
+CustomersVentilation=Contabilizar facturas a Clientes
 SuppliersVentilation=Contabilizar facturas de proveedores
 ExpenseReportsVentilation=Contabilizar informes de gastos
 CreateMvts=Crear nuevo movimiento
@@ -173,23 +173,23 @@ ExpenseReportsJournal=Diario informe de gastos
 DescFinanceJournal=El diario financiero incluye todos los tipos de pagos por cuenta bancaria
 DescJournalOnlyBindedVisible=Esta es una vista del registro vinculado a una cuenta contable y que se puede registrar en el Libro Mayor.
 VATAccountNotDefined=Cuenta contable para IVA no definida
-ThirdpartyAccountNotDefined=Cuenta contable de tercero no definida
+ThirdpartyAccountNotDefined=Cuenta contable de Cliente no definida
 ProductAccountNotDefined=Cuenta contable de producto no definida
 FeeAccountNotDefined=Cuenta de gastos no definida
 BankAccountNotDefined=Cuenta contable bancaria no definida
-CustomerInvoicePayment=Cobro de factura a cliente
-ThirdPartyAccount=Cuenta de tercero
+CustomerInvoicePayment=Cobro de factura a Cliente
+ThirdPartyAccount=Cuenta de Cliente
 NewAccountingMvt=Nuevo movimiento
 NumMvts=Número de movimiento
 ListeMvts=Listado de movimientos
 ErrorDebitCredit=Debe y Haber no pueden contener un valor al mismo tiempo
 AddCompteFromBK=Añadir cuentas contables al grupo
-ReportThirdParty=Listado de cuentas de terceros
-DescThirdPartyReport=Consulte aquí el listado de clientes y proveedores y sus códigos contables
+ReportThirdParty=Listado de cuentas de Clientes
+DescThirdPartyReport=Consulte aquí el listado de Clientes y proveedores y sus códigos contables
 ListAccounts=Listado de cuentas contables
-UnknownAccountForThirdparty=Cuenta contable de tercero desconocida, usaremos %s
-UnknownAccountForThirdpartyBlocking=Cuenta contable de tercero desconocida. Error de bloqueo
-UnknownAccountForThirdpartyAndWaitingAccountNotDefinedBlocking=Cuenta del terceros desconocida y cuenta de espera no definida. Error de bloqueo
+UnknownAccountForThirdparty=Cuenta contable de Cliente desconocida, usaremos %s
+UnknownAccountForThirdpartyBlocking=Cuenta contable de Cliente desconocida. Error de bloqueo
+UnknownAccountForThirdpartyAndWaitingAccountNotDefinedBlocking=Cuenta del Clientes desconocida y cuenta de espera no definida. Error de bloqueo
 
 Pcgtype=Grupo de cuenta
 Pcgsubtype=Subgrupo de cuenta
@@ -198,9 +198,9 @@ PcgtypeDesc=Grupo y subgrupo de cuenta se utilizan como criterios predefinidos d
 TotalVente=Total facturación antes de impuestos
 TotalMarge=Total margen ventas
 
-DescVentilCustomer=Consulte aquí la lista de líneas de facturas a clientes enlazadas (o no) a una cuenta contable de producto
+DescVentilCustomer=Consulte aquí la lista de líneas de facturas a Clientes enlazadas (o no) a una cuenta contable de producto
 DescVentilMore=En la mayoría de los casos, si utiliza productos o servicios predefinidos y establece la cuenta contable en la ficha del producto/servicio, la aplicación será capaz de hacer toda la contabilización entre las líneas de la factura y la cuenta contable de su plan general contable, con un clic en el botón <strong>"%s"</strong>, Si no se ha establecido la cuenta contable en la ficha del producto/servicio o si todavía tiene algunas líneas no contabilizadas a alguna cuenta, tendrá que hacer una contabilización manual desde el menú "<strong>%s</strong>".
-DescVentilDoneCustomer=Consulte aquí las líneas de facturas a clientes y las cuentas contables de sus productos
+DescVentilDoneCustomer=Consulte aquí las líneas de facturas a Clientes y las cuentas contables de sus productos
 DescVentilTodoCustomer=Contabilizar líneas de factura aún no contabilizadas con una cuenta contable de producto
 ChangeAccount=Cambie la cuenta del producto/servicio para las líneas seleccionadas a la cuenta:
 Vide=-

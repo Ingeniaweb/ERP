@@ -138,7 +138,7 @@ $morehtmlref.=$object->title;
 // Thirdparty
 if ($object->thirdparty->id > 0)
 {
-    $morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'project');
+    $morehtmlref.='<br>Cliente : ' . $object->thirdparty->getNomUrl(1, 'project');
 }
 $morehtmlref.='</div>';
 
@@ -169,10 +169,10 @@ if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
     // Opportunity status
     print '<tr><td>'.$langs->trans("OpportunityStatus").'</td><td>';
     $code = dol_getIdFromCode($db, $object->opp_status, 'c_lead_status', 'rowid', 'code');
-    if ($code) print $langs->trans("OppStatus".$code);
+    if ($code) print $langs->trans($code);
     print '</td></tr>';
 
-    // Opportunity percent
+    /*// Opportunity percent
     print '<tr><td>'.$langs->trans("OpportunityProbability").'</td><td>';
     if (strcmp($object->opp_percent,'')) print price($object->opp_percent,'',$langs,1,0).' %';
     print '</td></tr>';
@@ -180,7 +180,7 @@ if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
     // Opportunity Amount
     print '<tr><td>'.$langs->trans("OpportunityAmount").'</td><td>';
     if (strcmp($object->opp_amount,'')) print price($object->opp_amount,'',$langs,1,0,0,$conf->currency);
-    print '</td></tr>';
+    print '</td></tr>';*/
 }
 
 // Date start - end
@@ -274,7 +274,7 @@ $listofreferent=array(
     'buttonnew'=>'CreateBill',
     'testnew'=>$user->rights->facture->creer,
     'test'=>$conf->facture->enabled && $user->rights->facture->lire),
-'invoice_predefined'=>array(
+/*'invoice_predefined'=>array(
 	'name'=>"PredefinedInvoices",
 	'title'=>"ListPredefinedInvoicesAssociatedProject",
 	'class'=>'FactureRec',
@@ -285,12 +285,13 @@ $listofreferent=array(
     'buttonnew'=>'CreateBill',
     'testnew'=>$user->rights->facture->creer,
     'test'=>$conf->facture->enabled && $user->rights->facture->lire),
+*/
 'proposal_supplier'=>array(
 	'name'=>"SuppliersProposals",
 	'title'=>"ListSupplierProposalsAssociatedProject",
 	'class'=>'SupplierProposal',
 	'table'=>'supplier_proposal',
-	'datefieldname'=>'date',
+	'datefieldname'=>'datec',
     'urlnew'=>DOL_URL_ROOT.'/supplier_proposal/card.php?action=create&projectid='.$id.'&socid='.$socid,
     'lang'=>'supplier_proposal',
     'buttonnew'=>'AddSupplierProposal',
@@ -319,7 +320,7 @@ $listofreferent=array(
     'buttonnew'=>'AddSupplierInvoice',
     'testnew'=>$user->rights->fournisseur->facture->creer,
     'test'=>$conf->supplier_invoice->enabled && $user->rights->fournisseur->facture->lire),
-'contract'=>array(
+/*'contract'=>array(
 	'name'=>"Contracts",
 	'title'=>"ListContractAssociatedProject",
 	'class'=>'Contrat',
@@ -329,8 +330,8 @@ $listofreferent=array(
     'lang'=>'contracts',
     'buttonnew'=>'AddContract',
     'testnew'=>$user->rights->contrat->creer,
-    'test'=>$conf->contrat->enabled && $user->rights->contrat->lire),
-'intervention'=>array(
+    'test'=>$conf->contrat->enabled && $user->rights->contrat->lire),*/
+/*'intervention'=>array(
 	'name'=>"Interventions",
 	'title'=>"ListFichinterAssociatedProject",
 	'class'=>'Fichinter',
@@ -342,7 +343,7 @@ $listofreferent=array(
     'lang'=>'interventions',
     'buttonnew'=>'AddIntervention',
     'testnew'=>$user->rights->ficheinter->creer,
-    'test'=>$conf->ficheinter->enabled && $user->rights->ficheinter->lire),
+    'test'=>$conf->ficheinter->enabled && $user->rights->ficheinter->lire),*/
 'shipping'=>array(
     'name'=>"Shippings",
 	'title'=>"ListShippingAssociatedProject",
@@ -440,7 +441,7 @@ $listofreferent=array(
 	'datefieldname'=>'datem',
 	'disableamount'=>0,
 	'test'=>($conf->stock->enabled && $user->rights->stock->mouvement->lire && ! empty($conf->global->STOCK_MOVEMENT_INTO_PROJECT_OVERVIEW))),
-'variouspayment'=>array(
+/*'variouspayment'=>array(
 	'name'=>"VariousPayments",
 	'title'=>"ListVariousPaymentsAssociatedProject",
 	'class'=>'PaymentVarious',
@@ -452,7 +453,7 @@ $listofreferent=array(
     'lang'=>'banks',
     'buttonnew'=>'AddVariousPayment',
     'testnew'=>$user->rights->banque->modifier,
-    'test'=>$conf->banque->enabled && $user->rights->banque->lire),
+    'test'=>$conf->banque->enabled && $user->rights->banque->lire),*/
 /* No need for this, available on dedicated tab "Agenda/Events"
 'agenda'=>array(
 	'name'=>"Agenda",
@@ -766,12 +767,12 @@ foreach ($listofreferent as $key => $value)
 		if (in_array($tablename, array('projet_task'))) print $langs->trans("TimeSpent");
 		if (! in_array($tablename, array('projet_task'))) print $langs->trans("Date");
 		print '</td>';
-		// Thirdparty or user
+		// Cliente o usuario
 		print '<td>';
 		if (in_array($tablename, array('projet_task')) && $key == 'project_task') print '';		// if $key == 'project_task', we don't want details per user
-		elseif (in_array($tablename, array('payment_various'))) print '';						// if $key == 'payment_various', we don't have any thirdparty
+		elseif (in_array($tablename, array('payment_various'))) print '';						// if $key == 'payment_various', we no hay cliente
 		elseif (in_array($tablename, array('expensereport_det','don','projet_task','stock_mouvement'))) print $langs->trans("User");
-		else print $langs->trans("ThirdParty");
+		else print "Cliente";
 		print '</td>';
 		// Amount HT
 		//if (empty($value['disableamount']) && ! in_array($tablename, array('projet_task'))) print '<td align="right" width="120">'.$langs->trans("AmountHT").'</td>';

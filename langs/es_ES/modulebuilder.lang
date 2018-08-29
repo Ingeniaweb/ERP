@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - loan
+# language file - Source file is en_US - loan
 ModuleBuilderDesc=Esta herramienta debe ser usada por usuarios experimentados o desarrolladores. Te facilitará utilidades para construir o editar tu propio módulo (Documentación para un manual alternativo de desarrollo <a href="%s" target="_blank">aquí</a>).
 EnterNameOfModuleDesc=Introduce el nombre del módulo/aplicación a crear sin espacios. Utilice mayúsculas para separar palabras (Por ejemplo: MiModulo, EcommerceParaTienda, SincronizarConMiSistema...)
 EnterNameOfObjectDesc=Introduce el nombre del objeto a crear sin espacios. Usa mayúsculas para separar palabras (Por ejemplo: MiObjeto, Estudiante, Profesor...). El archivo de clase CRUD, pero también archivo API, páginas para listar/añadir/editar/eliminar objetos y archivos SQL serán generados.
@@ -86,7 +86,7 @@ HooksDefDesc=Defina en la propiedad <b>module_parts ['hooks']</b>, en el descrip
 TriggerDefDesc=Defina en el archivo trigger el código que desea ejecutar para cada evento ejecutado.
 SeeIDsInUse=Ver IDs en uso en su instalación
 SeeReservedIDsRangeHere=Ver rango de IDs reservados
-ToolkitForDevelopers=Herramientas para desarrolladores de Dolibarr
+ToolkitForDevelopers=Herramientas para desarrolladores
 TryToUseTheModuleBuilder=Si tiene conocimientos en SQL y PHP, puede intentar utilizar el asistente nativo de creación de módulos. Simplemente active el módulo y use el asistente haciendo clic <span class="fa fa-bug"></span>en  en el menú superior derecho. Advertencia: esta es una funcionalidad para desarrolladores, un uso inadecuado puede romper su aplicación.
 SeeTopRightMenu=Ver <span class="fa fa-bug"></span> en el menú superior derecho
 AddLanguageFile=Añadir archivo de idioma

@@ -51,6 +51,7 @@ $langs->load("commercial");
 $langs->load("bills");
 $langs->load("banks");
 $langs->load("users");
+$mainmenu=$_GET['leftmenu'];// variable obtener parametro de URL
 if (! empty($conf->categorie->enabled)) $langs->load("categories");
 if (! empty($conf->incoterm->enabled)) $langs->load("incoterm");
 if (! empty($conf->notification->enabled)) $langs->load("mails");
@@ -101,7 +102,7 @@ $result = restrictedArea($user, 'societe', $socid, '&societe', '', 'fk_soc', 'ro
 
 /*
  * Actions
- */
+*/
 
 $parameters=array('id'=>$socid, 'objcanvas'=>$objcanvas);
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
@@ -827,7 +828,10 @@ $form = new Form($db);
 $formfile = new FormFile($db);
 $formadmin = new FormAdmin($db);
 $formcompany = new FormCompany($db);
-
+$tipo_tercero='';
+if(isset($_REQUEST['leftmenu'])){
+	$tipo_tercero=$_GET['leftmenu']; //Variable tomada de la URL para determinar el tipo de usuario
+}
 if ($socid > 0 && empty($object->id))
 {
     $result=$object->fetch($socid);
@@ -992,7 +996,8 @@ else
         /* Show create form */
 
         $linkback="";
-        print load_fiche_titre($langs->trans("NewThirdParty"),$linkback,'title_companies.png');
+        
+        //print load_fiche_titre('Nuevo Cliente',$linkback,'title_companies.png');
 
         if (! empty($conf->use_javascript_ajax))
         {
@@ -1027,7 +1032,7 @@ else
                      });';
             print '</script>'."\n";
 
-            print '<div id="selectthirdpartytype">';
+           /* print '<div id="selectthirdpartytype">';
             print '<div class="hideonsmartphone float">';
             print $langs->trans("ThirdPartyType").': &nbsp; &nbsp; ';
             print '</div>';
@@ -1045,7 +1050,7 @@ else
 	        print $form->textwithpicto($text, $htmltext, 1, 'help', '', 0, 3);
             print '</label>';
             print '</div>';
-            print "<br>\n";
+            print "<br>\n";*/
         }
 
         dol_htmloutput_mesg(is_numeric($error)?'':$error, $errors, 'error');
@@ -1069,11 +1074,11 @@ else
 	    print '<tr><td class="titlefieldcreate">';
         if ($object->particulier || $private)
         {
-	        print '<span id="TypeName" class="fieldrequired">'.$langs->trans('ThirdPartyName').' / '.$langs->trans('LastName','name').'</span>';
+	        print '<span id="TypeName" class="fieldrequired">'.$langs->trans('Nombre').' / '.$langs->trans('LastName','name').'</span>';
         }
         else
 		{
-			print '<span id="TypeName" class="fieldrequired">'.fieldLabel('ThirdPartyName','name').'</span>';
+			print '<span id="TypeName" class="fieldrequired">'.fieldLabel('Nombre ','name').'</span>';
         }
 	    print '</td><td'.(empty($conf->global->SOCIETE_USEPREFIX)?' colspan="3"':'').'>';
 	    print '<input type="text" class="minwidth300" maxlength="128" name="name" id="name" value="'.$object->name.'" autofocus="autofocus"></td>';
@@ -1100,47 +1105,54 @@ else
 	    print '<td colspan="3"><input type="text" class="minwidth300" name="name_alias" id="name_alias_input" value="'.$object->name_alias.'"></td></tr>';
 
         // Prospect/Customer
-        print '<tr><td class="titlefieldcreate">'.fieldLabel('ProspectCustomer','customerprospect',1).'</td>';
-	    print '<td class="maxwidthonsmartphone">';
-	    $selected=GETPOST('client','int')!=''?GETPOST('client','int'):$object->client;
-        print '<select class="flat" name="client" id="customerprospect">';
-        if (GETPOST("type") == '') print '<option value="-1">&nbsp;</option>';
-        if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="2"'.($selected==2?' selected':'').'>'.$langs->trans('Prospect').'</option>';
-        if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS) && empty($conf->global->SOCIETE_DISABLE_PROSPECTSCUSTOMERS)) print '<option value="3"'.($selected==3?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
-        if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="1"'.($selected==1?' selected':'').'>'.$langs->trans('Customer').'</option>';
-        print '<option value="0"'.((string) $selected == '0'?' selected':'').'>'.$langs->trans('NorProspectNorCustomer').'</option>';
-        print '</select></td>';
+        if($tipo_tercero=="customers"){//Comentada/creada Condicion add por JL
+        	 	print '<tr><td class="titlefieldcreate">'.fieldLabel('ProspectCustomer','customerprospect',1).'</td>';
+			    print '<td class="maxwidthonsmartphone">';
+			    $selected=GETPOST('client','int')!=''?GETPOST('client','int'):$object->client;
+		        print '<select class="flat" name="client" id="customerprospect">';
+		        if (GETPOST("type") == '') print '<option value="-1">&nbsp;</option>';
+		        if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="2"'.($selected==2?' selected':'').'>'.$langs->trans('Prospect').'</option>';
+		        if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS) && empty($conf->global->SOCIETE_DISABLE_PROSPECTSCUSTOMERS)) print '<option value="3"'.($selected==3?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
+		        if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="1"'.($selected==1?' selected':'').'>'.$langs->trans('Customer').'</option>';
+		        print '<option value="0"'.((string) $selected == '0'?' selected':'').'>'.$langs->trans('NorProspectNorCustomer').'</option>';
+		        print '</select></td>';
 
-        print '<td>'.fieldLabel('CustomerCode','customer_code').'</td><td>';
-        print '<table class="nobordernopadding"><tr><td>';
-		$tmpcode=$object->code_client;
-        if (empty($tmpcode) && ! empty($modCodeClient->code_auto)) $tmpcode=$modCodeClient->getNextValue($object,0);
-        print '<input type="text" name="code_client" id="customer_code" class="maxwidthonsmartphone" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
-        print '</td><td>';
-        $s=$modCodeClient->getToolTip($langs,$object,0);
-        print $form->textwithpicto('',$s,1);
-        print '</td></tr></table>';
-        print '</td></tr>';
+		        print '<td>'.fieldLabel('CustomerCode','customer_code').'</td><td>';
+		        print '<table class="nobordernopadding"><tr><td>';
+				$tmpcode=$object->code_client;
+		        if (empty($tmpcode) && ! empty($modCodeClient->code_auto)) $tmpcode=$modCodeClient->getNextValue($object,0);
+		        print '<input type="text" name="code_client" id="customer_code" class="maxwidthonsmartphone" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
+		        print '</td><td>';
+		        $s=$modCodeClient->getToolTip($langs,$object,0);
+		        print $form->textwithpicto('',$s,1);
+		        print '</td></tr></table>';
+		        print '</td></tr>';	
+        }
+       
 
-        if (! empty($conf->fournisseur->enabled) && ! empty($user->rights->fournisseur->lire))
+        if (! empty($conf->fournisseur->enabled) && ! empty($user->rights->fournisseur->lire) && $tipo_tercero=="suppliers")//Comentada Add condicion tipo_tercero JL
         {
             // Supplier
-            print '<tr>';
-            print '<td>'.fieldLabel('Supplier','fournisseur',1).'</td><td>';
-            $default = -1;
-            if (! empty($conf->global->THIRDPARTY_SUPPLIER_BY_DEFAULT)) $default=1;
-            print $form->selectyesno("fournisseur", (GETPOST('fournisseur','int')!=''?GETPOST('fournisseur','int'):(GETPOST("type",'alpha') == '' ? $default : $object->fournisseur)), 1, 0, (GETPOST("type",'alpha') == '' ? 1 : 0));
-            print '</td>';
-            print '<td>'.fieldLabel('SupplierCode','supplier_code').'</td><td>';
-            print '<table class="nobordernopadding"><tr><td>';
-            $tmpcode=$object->code_fournisseur;
-            if (empty($tmpcode) && ! empty($modCodeFournisseur->code_auto)) $tmpcode=$modCodeFournisseur->getNextValue($object,1);
-            print '<input type="text" name="code_fournisseur" id="supplier_code" class="maxwidthonsmartphone" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
-            print '</td><td>';
-            $s=$modCodeFournisseur->getToolTip($langs,$object,1);
-            print $form->textwithpicto('',$s,1);
-            print '</td></tr></table>';
-            print '</td></tr>';
+            
+	            print '<tr>';
+	            //print '<td>'.fieldLabel('Supplier','fournisseur',1).'</td><td>'; //Comentada por JL
+	            print '<td style="display:none;">';
+	            $default = -1;
+	            if (! empty($conf->global->THIRDPARTY_SUPPLIER_BY_DEFAULT)) $default=1;
+	            print $form->selectyesno("fournisseur", (GETPOST('fournisseur','int')!=''?GETPOST('fournisseur','int'):(GETPOST("type",'alpha') == '' ? $default : $object->fournisseur)), 1, 0, (GETPOST("type",'alpha') == '' ? 1 : 0));
+	            print '</td>';
+	            print '<td>'.fieldLabel('SupplierCode','supplier_code').'</td><td>';
+	            print '<table class="nobordernopadding"><tr><td>';
+	            $tmpcode=$object->code_fournisseur;
+	            if (empty($tmpcode) && ! empty($modCodeFournisseur->code_auto)) $tmpcode=$modCodeFournisseur->getNextValue($object,1);
+	            print '<input type="text" name="code_fournisseur" id="supplier_code" class="maxwidthonsmartphone" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
+	            print '</td><td>';
+	            $s=$modCodeFournisseur->getToolTip($langs,$object,1);
+	            print $form->textwithpicto('',$s,1);
+	            print '</td></tr></table>';
+	            print '</td></tr>';
+
+
         }
 
         // Status
@@ -1211,15 +1223,20 @@ else
             if ($idprof!='-')
             {
 	            $key='idprof'.$i;
+	            if($key != 'idprof1'){
 
-                if (($j % 2) == 0) print '<tr>';
+	            }
+	            else{
+	                if (($j % 2) == 0) print '<tr>';
 
-                $idprof_mandatory ='SOCIETE_IDPROF'.($i).'_MANDATORY';
-                print '<td>'.fieldLabel($idprof,$key, (empty($conf->global->$idprof_mandatory)?0:1)).'</td><td>';
+	                $idprof_mandatory ='SOCIETE_IDPROF'.($i).'_MANDATORY';
+	                print '<td>'.fieldLabel($idprof,$key, (empty($conf->global->$idprof_mandatory)?0:1)).'</td><td>';
 
-                print $formcompany->get_input_id_prof($i, $key, $object->$key, $object->country_code);
-                print '</td>';
-                if (($j % 2) == 1) print '</tr>';
+	                print $formcompany->get_input_id_prof($i, $key, $object->$key, $object->country_code);
+	                print '</td>';
+	                if (($j % 2) == 1) print '</tr>';
+	            }
+
                 $j++;
             }
             $i++;
@@ -1227,10 +1244,11 @@ else
         if ($j % 2 == 1) print '<td colspan="2"></td></tr>';
 
         // Vat is used
-        print '<tr><td>'.fieldLabel('VATIsUsed','assujtva_value').'</td>';
+        print '<tr><td>'.fieldLabel('Impuestos (IVA)','assujtva_value').'</td>';
         print '<td>';
         print $form->selectyesno('assujtva_value',(isset($conf->global->THIRDPARTY_DEFAULT_USEVAT)?$conf->global->THIRDPARTY_DEFAULT_USEVAT:1),1);     // Assujeti par defaut en creation
         print '</td>';
+       /* 
         print '<td class="nowrap">'.fieldLabel('VATIntra','intra_vat').'</td>';
         print '<td class="nowrap">';
         $s = '<input type="text" class="flat maxwidthonsmartphone" name="tva_intra" id="intra_vat" maxlength="20" value="'.$object->tva_intra.'">';
@@ -1258,6 +1276,7 @@ else
         }
         print $s;
         print '</td>';
+        */
         print '</tr>';
 
         // Local Taxes
@@ -1284,7 +1303,8 @@ else
             print '</td></tr>';
         }
 
-        // Type - Size
+        // Tipo de Tercero
+        /*
         print '<tr><td>'.fieldLabel('ThirdPartyType','typent_id').'</td><td class="maxwidthonsmartphone">'."\n";
         $sortparam=(empty($conf->global->SOCIETE_SORT_ON_TYPEENT)?'ASC':$conf->global->SOCIETE_SORT_ON_TYPEENT); // NONE means we keep sort of original array, so we sort on position. ASC, means next function will sort on label.
         print $form->selectarray("typent_id", $formcompany->typent_array(0), $object->typent_id, 0, 0, 0, '', 0, 0, 0, $sortparam);
@@ -1294,7 +1314,8 @@ else
         print $form->selectarray("effectif_id", $formcompany->effectif_array(0), $object->effectif_id);
         if ($user->admin) print ' '.info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
         print '</td></tr>';
-
+        */
+/*
         // Legal Form
         print '<tr><td>'.fieldLabel('JuridicalStatus','forme_juridique_code').'</td>';
         print '<td colspan="3" class="maxwidthonsmartphone">';
@@ -1325,12 +1346,12 @@ else
         {
             // Assign a Name
             print '<tr>';
-            print '<td>'.fieldLabel('AllocateCommercial','commercial_id').'</td>';
+            print '<td>'.fieldLabel('Asignado a: ','commercial_id').'</td>';
             print '<td colspan="3" class="maxwidthonsmartphone">';
             print $form->select_dolusers((! empty($object->commercial_id)?$object->commercial_id:$user->id),'commercial_id',1); // Add current user by default
             print '</td></tr>';
         }
-
+*/
 		// Incoterms
 		if (!empty($conf->incoterm->enabled))
 		{
@@ -1345,6 +1366,7 @@ else
 		if (! empty($conf->categorie->enabled)  && ! empty($user->rights->categorie->lire))
 		{
 			$langs->load('categories');
+			
 
 			// Customer
 			if ($object->prospect || $object->client) {
@@ -1384,20 +1406,22 @@ else
         	print $object->showOptionals($extrafields,'edit');
         }
 
-        // Ajout du logo
+        // Eliminación del logo
+        /*
         print '<tr class="hideonsmartphone">';
         print '<td>'.fieldLabel('Logo','photoinput').'</td>';
         print '<td colspan="3">';
         print '<input class="flat" type="file" name="photo" id="photoinput" />';
         print '</td>';
         print '</tr>';
+        */
 
         print '</table>'."\n";
 
         dol_fiche_end();
 
         print '<div class="center">';
-        print '<input type="submit" class="button" name="create" value="'.$langs->trans('AddThirdParty').'">';
+        print '<input type="submit" class="button" name="create" value="Crear">';
         if (! empty($backtopage))
         {
             print ' &nbsp; &nbsp; ';
@@ -1608,7 +1632,7 @@ else
 			}
 
             // Name
-            print '<tr><td class="titlefieldcreate">'.fieldLabel('ThirdPartyName','name',1).'</td>';
+            print '<tr><td class="titlefieldcreate">'.fieldLabel('Nombre','name',1).'</td>';
 	        print '<td colspan="3"><input type="text" class="minwidth300" maxlength="128" name="name" id="name" value="'.dol_escape_htmltag($object->name).'" autofocus="autofocus"></td></tr>';
 
 	        // Alias names (commercial, trademark or alias names)
@@ -1631,74 +1655,74 @@ else
                 }
                 print '</td>';
             }
+           
 
             // Prospect/Customer
-            print '<tr><td>'.fieldLabel('ProspectCustomer','customerprospect',1).'</td>';
-	        print '<td class="maxwidthonsmartphone"><select class="flat" name="client" id="customerprospect">';
-            if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="2"'.($object->client==2?' selected':'').'>'.$langs->trans('Prospect').'</option>';
-            if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="3"'.($object->client==3?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
-            if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="1"'.($object->client==1?' selected':'').'>'.$langs->trans('Customer').'</option>';
-            print '<option value="0"'.($object->client==0?' selected':'').'>'.$langs->trans('NorProspectNorCustomer').'</option>';
-            print '</select></td>';
-            print '<td>'.fieldLabel('CustomerCode','customer_code').'</td><td>';
+            if($tipo_tercero=="customers" || $object->client !=0){
+            	print '<tr><td>'.fieldLabel('ProspectCustomer','customerprospect',1).'</td>';
+	        	print '<td class="maxwidthonsmartphone"><select class="flat" name="client" id="customerprospect">';
+            	if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="2"'.($object->client==2?' selected':'').'>'.$langs->trans('Prospect').'</option>';
+            	if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="3"'.($object->client==3?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
+            	if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="1"'.($object->client==1?' selected':'').'>'.$langs->trans('Customer').'</option>';
+            	print '<option value="0"'.($object->client==0?' selected':'').'>'.$langs->trans('NorProspectNorCustomer').'</option>';
+            	print '</select></td></tr>';
+            	print '<tr><td>'.fieldLabel('CustomerCode','customer_code').'</td><td>';
 
-            print '<table class="nobordernopadding"><tr><td>';
-            if ((!$object->code_client || $object->code_client == -1) && $modCodeClient->code_auto)
-            {
-                $tmpcode=$object->code_client;
-                if (empty($tmpcode) && ! empty($object->oldcopy->code_client)) $tmpcode=$object->oldcopy->code_client; // When there is an error to update a thirdparty, the number for supplier and customer code is kept to old value.
-                if (empty($tmpcode) && ! empty($modCodeClient->code_auto)) $tmpcode=$modCodeClient->getNextValue($object,0);
-                print '<input type="text" name="code_client" id="customer_code" size="16" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
-            }
-            else if ($object->codeclient_modifiable())
-            {
-            	print '<input type="text" name="code_client" id="customer_code" size="16" value="'.dol_escape_htmltag($object->code_client).'" maxlength="15">';
-            }
-            else
-            {
-                print $object->code_client;
-                print '<input type="hidden" name="code_client" value="'.dol_escape_htmltag($object->code_client).'">';
-            }
-            print '</td><td>';
-            $s=$modCodeClient->getToolTip($langs,$object,0);
-            print $form->textwithpicto('',$s,1);
-            print '</td></tr></table>';
+            	print '<table class="nobordernopadding"><tr><td>';
+	            if ((!$object->code_client || $object->code_client == -1) && $modCodeClient->code_auto)
+	            {
+	                $tmpcode=$object->code_client;
+	                if (empty($tmpcode) && ! empty($object->oldcopy->code_client)) $tmpcode=$object->oldcopy->code_client; // When there is an error to update a thirdparty, the number for supplier and customer code is kept to old value.
+	                if (empty($tmpcode) && ! empty($modCodeClient->code_auto)) $tmpcode=$modCodeClient->getNextValue($object,0);
+	                print '<input type="text" name="code_client" id="customer_code" size="16" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
+	            }
+	            else if ($object->codeclient_modifiable())
+	            {
+	            	print '<input type="text" name="code_client" id="customer_code" size="16" value="'.dol_escape_htmltag($object->code_client).'" maxlength="15">';
+	            }
+	            else
+	            {
+	                print $object->code_client;
+	                print '<input type="hidden" name="code_client" value="'.dol_escape_htmltag($object->code_client).'">';
+	            }
+            	print '</td><td>';
+            	$s=$modCodeClient->getToolTip($langs,$object,0);
+            	print $form->textwithpicto('',$s,1);
+            	print '</td></tr></table></tr>';
 
-            print '</td></tr>';
+            	print '</td></tr>';
+}
+	            // Supplier
+	            if (! empty($conf->fournisseur->enabled) && ! empty($user->rights->fournisseur->lire) && $object->client ==0)
+	            {
+	                print '<tr>';
+	                print '<td>'.fieldLabel('Supplier','fournisseur',1).'</td><td class="maxwidthonsmartphone">';
+	                print $form->selectyesno("fournisseur",$object->fournisseur,1);
+	                print '</td>';
+	                print '<td>'.fieldLabel('SupplierCode','supplier_code').'</td><td>';
 
-            // Supplier
-            if (! empty($conf->fournisseur->enabled) && ! empty($user->rights->fournisseur->lire))
-            {
-                print '<tr>';
-                print '<td>'.fieldLabel('Supplier','fournisseur',1).'</td><td class="maxwidthonsmartphone">';
-                print $form->selectyesno("fournisseur",$object->fournisseur,1);
-                print '</td>';
-                print '<td>'.fieldLabel('SupplierCode','supplier_code').'</td><td>';
+	                print '<table class="nobordernopadding"><tr><td>';
+	                if ((!$object->code_fournisseur || $object->code_fournisseur == -1) && $modCodeFournisseur->code_auto)
+	                {
+	                    $tmpcode=$object->code_fournisseur;
+	                    if (empty($tmpcode) && ! empty($object->oldcopy->code_fournisseur)) $tmpcode=$object->oldcopy->code_fournisseur; // When there is an error to update a thirdparty, the number for supplier and customer code is kept to old value.
+	                    if (empty($tmpcode) && ! empty($modCodeFournisseur->code_auto)) $tmpcode=$modCodeFournisseur->getNextValue($object,1);
+	                    print '<input type="text" name="code_fournisseur" id="supplier_code" size="16" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
+	                }else if ($object->codefournisseur_modifiable()){
+	                    print '<input type="text" name="code_fournisseur" id="supplier_code" size="16" value="'.$object->code_fournisseur.'" maxlength="15">';
+	                }else{
+	                    print $object->code_fournisseur;
+	                    print '<input type="hidden" name="code_fournisseur" value="'.$object->code_fournisseur.'">';
+	                }
+	                print '</td><td>';
+	                $s=$modCodeFournisseur->getToolTip($langs,$object,1);
+	                print $form->textwithpicto('',$s,1);
+	                print '</td></tr></table>';
 
-                print '<table class="nobordernopadding"><tr><td>';
-                if ((!$object->code_fournisseur || $object->code_fournisseur == -1) && $modCodeFournisseur->code_auto)
-                {
-                    $tmpcode=$object->code_fournisseur;
-                    if (empty($tmpcode) && ! empty($object->oldcopy->code_fournisseur)) $tmpcode=$object->oldcopy->code_fournisseur; // When there is an error to update a thirdparty, the number for supplier and customer code is kept to old value.
-                    if (empty($tmpcode) && ! empty($modCodeFournisseur->code_auto)) $tmpcode=$modCodeFournisseur->getNextValue($object,1);
-                    print '<input type="text" name="code_fournisseur" id="supplier_code" size="16" value="'.dol_escape_htmltag($tmpcode).'" maxlength="15">';
-                }
-                else if ($object->codefournisseur_modifiable())
-                {
-                    print '<input type="text" name="code_fournisseur" id="supplier_code" size="16" value="'.$object->code_fournisseur.'" maxlength="15">';
-                }
-                else
-              {
-                    print $object->code_fournisseur;
-                    print '<input type="hidden" name="code_fournisseur" value="'.$object->code_fournisseur.'">';
-                }
-                print '</td><td>';
-                $s=$modCodeFournisseur->getToolTip($langs,$object,1);
-                print $form->textwithpicto('',$s,1);
-                print '</td></tr></table>';
-
-                print '</td></tr>';
-            }
+	                print '</td></tr>';
+	            }	
+            
+            
 
             // Barcode
             if (! empty($conf->barcode->enabled))
@@ -1762,27 +1786,29 @@ else
             // Prof ids
             $i=1; $j=0;
             while ($i <= 6)
-            {
-                $idprof=$langs->transcountry('ProfId'.$i,$object->country_code);
-                if ($idprof!='-')
-                {
-	                $key='idprof'.$i;
+	        {
+	            $idprof=$langs->transcountry('ProfId'.$i,$object->country_code);
+	            if ($idprof!='-')
+	            {
+		            $key='idprof'.$i;
+		            if($key != 'idprof1'){
 
-	                if (($j % 2) == 0) print '<tr>';
+		            }
+		            else{
+		                if (($j % 2) == 0) print '<tr>';
 
-	                $idprof_mandatory ='SOCIETE_IDPROF'.($i).'_MANDATORY';
-	                if (empty($conf->global->$idprof_mandatory) || ! $object->isACompany())
-	                    print '<td>'.fieldLabel($idprof,$key).'</td><td>';
-                    else
-	                    print '<td><span class="fieldrequired">'.fieldLabel($idprof,$key).'</td><td>';
+		                $idprof_mandatory ='SOCIETE_IDPROF'.($i).'_MANDATORY';
+		                print '<td>'.fieldLabel($idprof,$key, (empty($conf->global->$idprof_mandatory)?0:1)).'</td><td>';
 
-	                print $formcompany->get_input_id_prof($i,$key,$object->$key,$object->country_code);
-                    print '</td>';
-                    if (($j % 2) == 1) print '</tr>';
-                    $j++;
-                }
-                $i++;
-            }
+		                print $formcompany->get_input_id_prof($i, $key, $object->$key, $object->country_code);
+		                print '</td>';
+		                if (($j % 2) == 1) print '</tr>';
+		            }
+
+	                $j++;
+	            }
+	            $i++;
+	        }
             if ($j % 2 == 1) print '<td colspan="2"></td></tr>';
 
             // VAT is used
@@ -1842,7 +1868,7 @@ else
             }
 
             // VAT Code
-            print '<tr><td>'.fieldLabel('VATIntra','intra_vat').'</td>';
+           /* print '<tr><td>'.fieldLabel('VATIntra','intra_vat').'</td>';
             print '<td colspan="3">';
             $s ='<input type="text" class="flat maxwidthonsmartphone" name="tva_intra" id="intra_vat" maxlength="20" value="'.$object->tva_intra.'">';
 
@@ -1869,18 +1895,18 @@ else
             }
             print $s;
             print '</td>';
-            print '</tr>';
+            print '</tr>';*/
 
             // Type - Size
-            print '<tr><td>'.fieldLabel('ThirdPartyType','typent_id').'</td><td class="maxwidthonsmartphone">';
-            print $form->selectarray("typent_id",$formcompany->typent_array(0), $object->typent_id, 0, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT)?'ASC':$conf->global->SOCIETE_SORT_ON_TYPEENT));
+            /*print '<tr><td>'.fieldLabel('ThirdPartyType','typent_id').'</td><td class="maxwidthonsmartphone">';
+            print $form->selectarray("typent_id",$formcompany->typent_array(0), $object->typent_id, 0, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT)?'ASC':$conf->global->SOCIETE_SORT_ON_TYPEENT));*/
             if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
             print '</td>';
             print '<td>'.fieldLabel('Staff','effectif_id').'</td><td class="maxwidthonsmartphone">';
             print $form->selectarray("effectif_id",$formcompany->effectif_array(0), $object->effectif_id);
             if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
             print '</td></tr>';
-
+/*
             // Juridical type
             print '<tr><td>'.fieldLabel('JuridicalStatus','forme_juridique_code').'</td><td class="maxwidthonsmartphone" colspan="3">';
             print $formcompany->select_juridicalstatus($object->forme_juridique_code, $object->country_code, '', 'forme_juridique_code');
@@ -1891,7 +1917,7 @@ else
 	        print '<td colspan="3"><input type="text" name="capital" id="capital" size="10" value="';
 	        print dol_escape_htmltag(price($object->capital));
 	        print '"> <font class="hideonsmartphone">'.$langs->trans("Currency".$conf->currency).'</font></td></tr>';
-
+*/
             // Default language
             if (! empty($conf->global->MAIN_MULTILANGS))
             {
@@ -1972,7 +1998,7 @@ else
 				print '</td></tr>';
 			}
 
-            // Logo
+            /*// Logo
             print '<tr class="hideonsmartphone">';
             print '<td>'.fieldLabel('Logo','photoinput').'</td>';
             print '<td colspan="3">';
@@ -1989,7 +2015,7 @@ else
             }
             print '</td>';
             print '</tr>';
-
+*/
             print '</table>';
             print '</div>';
 
@@ -2283,14 +2309,16 @@ else
         $arr = $formcompany->typent_array(1);
         $object->typent= $arr[$object->typent_code];
         print '<tr><td>'.$langs->trans("ThirdPartyType").'</td><td>'.$object->typent.'</td>';
-        print '<tr><td>'.$langs->trans("Staff").'</td><td>'.$object->effectif.'</td></tr>';
+      //  print '<tr><td>'.$langs->trans("Staff").'</td><td>'.$object->effectif.'</td></tr>';
 
         print '</table>';
 
         print '</div>';
-        print '<div class="fichehalfright"><div class="ficheaddleft">';
+       /* 
+        *  print '<div class="fichehalfright"><div class="ficheaddleft">';
 
         print '<div class="underbanner clearboth"></div>';
+       
         print '<table class="border tableforfield" width="100%">';
 
     	// Tags / categories
@@ -2427,7 +2455,7 @@ else
 
         print '</table>';
 		print '</div>';
-
+*/
         print '</div></div>';
         print '<div style="clear:both"></div>';
 
@@ -2455,7 +2483,59 @@ else
 						break;
 					}
 				}
+				if ($user->rights->fournisseur->commande->creer)
+				{
+					$langs->load("orders");
+					if ($object->status == 1)
+					{
+						print '<a class="butAction" href="'.DOL_URL_ROOT.'/fourn/commande/card.php?action=create&socid='.$object->id.'">'.$langs->trans("AddOrder").'</a>';
+					}
+					else
+					{
+						print '<a class="butActionRefused" title="'.dol_escape_js($langs->trans("ThirdPartyIsClosed")).'" href="#">'.$langs->trans("AddOrder").'</a>';
+					}
+				}
+				if ($user->rights->fournisseur->facture->creer)
+						{
+							$langs->load("bills");
+					      if ($object->status == 1)
+					      {
+					        print '<a class="butAction" href="'.DOL_URL_ROOT.'/fourn/facture/card.php?action=create&socid='.$object->id.'">'.$langs->trans("AddBill").'</a>';
+					      }
+					      else
+					      {
+					        print '<a class="butActionRefused" title="'.dol_escape_js($langs->trans("ThirdPartyIsClosed")).'" href="#">'.$langs->trans("AddBill").'</a>';
+					      }
+						}
 
+						if ($user->rights->fournisseur->facture->creer)
+						{
+							if (! empty($orders2invoice) && $orders2invoice > 0)
+							{
+								if ($object->status == 1)
+								{
+									print '<div class="inline-block divButAction"><a class="butAction" href="'.DOL_URL_ROOT.'/fourn/commande/orderstoinvoice.php?socid='.$object->id.'">'.$langs->trans("CreateInvoiceForThisCustomer").'</a></div>';
+								}
+								else
+								{
+									print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">'.$langs->trans("CreateInvoiceForThisCustomer").'</a></div>';
+								}
+							}
+							else print '<div class="inline-block divButAction"><a class="butActionRefused" title="'.dol_escape_js($langs->trans("NoOrdersToInvoice")).'" href="#">'.$langs->trans("CreateInvoiceForThisCustomer").'</a></div>';
+						}
+
+				    	// Add action
+				    	if (! empty($conf->agenda->enabled) && ! empty($conf->global->MAIN_REPEATTASKONEACHTAB) && $object->status==1)
+				    	{
+				        	if ($user->rights->agenda->myactions->create)
+				        	{
+				            	print '<a class="butAction" href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create&socid='.$object->id.'">'.$langs->trans("AddAction").'</a>';
+				        	}
+				        	else
+				        	{
+				            	print '<a class="butAction" title="'.dol_escape_js($langs->trans("NotAllowed")).'" href="#">'.$langs->trans("AddAction").'</a>';
+				        	}
+				    	}				
 		        if (! empty($object->email) || $at_least_one_email_contact)
 		        {
 		        	$langs->load("mails");
@@ -2487,7 +2567,7 @@ else
 					{
 		                print '<div class="inline-block divButAction"><a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?socid='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a></div>'."\n";
 		            }
-		        }
+		        }					        
 			}
 
 	        print '</div>'."\n";

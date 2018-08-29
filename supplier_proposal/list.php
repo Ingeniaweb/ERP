@@ -449,7 +449,7 @@ if ($resql)
 
 	if (! empty($moreforfilter))
 	{
-		print '<div class="liste_titre liste_titre_bydiv centpercent">';
+		print '<div class="liste_titre liste_titre_bydiv centpercent" style="display: none;">';
 		print $moreforfilter;
 		print '</div>';
 	}

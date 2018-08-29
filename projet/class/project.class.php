@@ -57,6 +57,12 @@ class Project extends CommonObject
     var $date_end;
     var $date_close;
 
+    var $tec1;
+    var $tec2;
+    var $tec3;
+    var $prog1;
+    var $prog2;
+
     var $socid;             // To store id of thirdparty
     var $thirdparty_name;   // To store name of thirdparty (defined only in some cases)
 
@@ -162,6 +168,7 @@ class Project extends CommonObject
         }
 
         $this->db->begin();
+        $var="holita";
 
         $sql = "INSERT INTO " . MAIN_DB_PREFIX . "projet (";
         $sql.= "ref";
@@ -179,6 +186,22 @@ class Project extends CommonObject
         $sql.= ", opp_amount";
         $sql.= ", budget_amount";
         $sql.= ", entity";
+        if(isset($_POST['tec1']) && $_POST['tec1']!='0'){
+            $sql.= ", tecnico1";
+            if(isset($_POST['tec2']) && $_POST['tec2']!='0'){
+                $sql.= ", tecnico2";
+                if(isset($_POST['tec3']) && $_POST['tec3']!='0'){
+                        $sql.= ", tecnico3";
+                }
+            }
+        }
+        if(isset($_POST['prog1']) && $_POST['prog1']!='0'){
+            $sql.= ", programador1";
+            if(isset($_POST['prog2']) && $_POST['prog2']!='0'){
+                $sql.= ", programador2";
+            }
+        }
+        
         $sql.= ") VALUES (";
         $sql.= "'" . $this->db->escape($this->ref) . "'";
         $sql.= ", '" . $this->db->escape($this->title) . "'";
@@ -195,8 +218,28 @@ class Project extends CommonObject
         $sql.= ", " . (strcmp($this->opp_amount,'') ? price2num($this->opp_amount) : 'null');
         $sql.= ", " . (strcmp($this->budget_amount,'') ? price2num($this->budget_amount) : 'null');
         $sql.= ", ".$conf->entity;
-        $sql.= ")";
+        if(isset($_POST['tec1']) && $_POST['tec1']!='0' && $_POST['tec1']!=null && $_POST['tec1']!=''){
+            $sql.= ", ". $_POST['tec1'];  //($_POST['tec1'] != null) ? $_POST['tec1'] : 'null';
+            if(isset($_POST['tec2']) && $_POST['tec2']!='0' && $_POST['tec2']!=null && $_POST['tec2']!=''){
+                $sql.= ", ".$_POST['tec2'];  //($_POST['tec2'] != null) ? $_POST['tec2'] : 'null';
+                if(isset($_POST['tec3']) && $_POST['tec3']!='0' && $_POST['tec3']!=null && $_POST['tec3']!=''){
+                    $sql.= ", ".$_POST['tec3'];  //($_POST['tec3'] != null) ? $_POST['tec3'] : 'null';
+                }
+            }
+        }
 
+        
+        if(isset($_POST['prog1']) && $_POST['prog1']!='0' && $_POST['prog1']!=null && $_POST['prog1']!=''){
+            $sql.= ", ".$_POST['prog1'];  //($_POST['prog1'] != null) ? $_POST['prog1'] : 'null';
+            if(isset($_POST['prog2']) && $_POST['prog2']!='0' && $_POST['prog2']!=null && $_POST['prog2']!=''){
+                $sql.= ", ".$_POST['prog2'];       //($_POST['prog2'] != null) ? $_POST['prog2'] : 'null';
+            }
+        }
+
+
+        $sql.= ")";
+        print "esta es la sql: ".$sql."<br>";
+        var_dump($_REQUEST);
         dol_syslog(get_class($this)."::create", LOG_DEBUG);
         $resql = $this->db->query($sql);
         if ($resql)

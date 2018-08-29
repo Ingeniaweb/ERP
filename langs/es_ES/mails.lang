@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - mails
+# language file - Source file is en_US - mails
 Mailing=E-Mailing
 EMailing=E-Mailing
 EMailings=E-Mailings
@@ -80,14 +80,14 @@ NbIgnored=Nº ignorados
 NbSent=Nº enviados
 SentXXXmessages=%s mensaje(s) enviado(s)
 ConfirmUnvalidateEmailing=¿Está seguro de querer cambiar el estado del e-mailing <b>%s</b> a borrador?
-MailingModuleDescContactsWithThirdpartyFilter=Filtro de contactos con tercero
-MailingModuleDescContactsByCompanyCategory=Contactos de terceros por categoría
+MailingModuleDescContactsWithThirdpartyFilter=Filtro de contactos con Cliente
+MailingModuleDescContactsByCompanyCategory=Contactos de Clientes por categoría
 MailingModuleDescContactsByCategory=Contactos por categoría
 MailingModuleDescContactsByFunction=Contactos por posición
 MailingModuleDescEmailsFromFile=E-mails de archivo
 MailingModuleDescEmailsFromUser=E-mails enviados por usuario
 MailingModuleDescDolibarrUsers=Usuarios con e-mails
-MailingModuleDescThirdPartiesByCategories=Terceros (por categoría)
+MailingModuleDescThirdPartiesByCategories=Clientes (por categoría)
 SendingFromWebInterfaceIsNotAllowed=El envío desde la interfaz web no está permitido.
 
 # Libelle des modules de liste de destinataires mailing
@@ -136,7 +136,7 @@ NbOfTargetedContacts=Número actual de contactos destinariarios de e-mails
 UseFormatFileEmailToTarget=Los ficheros importados deben tener el formato <strong>email;nombre;apellido;otros</strong>
 UseFormatInputEmailToTarget=Entra una cadena con el formato <strong>email;nombre;apellido;otros</strong>
 MailAdvTargetRecipients=Destinatarios (selección avanzada)
-AdvTgtTitle=Rellene los campos para preseleccionar los terceros o contactos/direcciones a enviar
+AdvTgtTitle=Rellene los campos para preseleccionar los Clientes o contactos/direcciones a enviar
 AdvTgtSearchTextHelp=Use %% como comodín. Por ejemplo para encontrar todos los elementos como <b>juan, jose,jorge</b>, puede indicar <b>j%%</b>, también puede usar ; como separador de valor y usar ! para omitir el valor. Por ejemplo <b>juan;jose;jor%%!jimo;!jima%</b> hará como destinatarios todos los juan, jose, los que empiecen por jor pero no jimo o jima.
 AdvTgtSearchIntHelp=Use un intervaldo para seleccionar valor int o float
 AdvTgtMinVal=Valor mínimo
@@ -144,7 +144,7 @@ AdvTgtMaxVal=Valor máxio
 AdvTgtSearchDtHelp=Use un intervalo para seleccionar una fecha
 AdvTgtStartDt=Fecha inicio
 AdvTgtEndDt=Fecha fin
-AdvTgtTypeOfIncudeHelp=Destinatario el e-mail del tercero y el e-mail del contacto del tercero, o solamente el e-mail del tercero o el e-mail del contacto
+AdvTgtTypeOfIncudeHelp=Destinatario el e-mail del Cliente y el e-mail del contacto del Cliente, o solamente el e-mail del Cliente o el e-mail del contacto
 AdvTgtTypeOfIncude=Tipo de e-mail destinatario
 AdvTgtContactHelp=Usar solamente si ha escogido contacto en "Tipo de e-mail destinatario"
 AddAll=Añadir todo

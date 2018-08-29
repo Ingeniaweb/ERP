@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - multicurrency
+# language file - Source file is en_US - multicurrency
 MultiCurrency=Multi moneda
 ErrorAddRateFail=Error al añadir tasa
 ErrorAddCurrencyFail=Error al añadir la divisa

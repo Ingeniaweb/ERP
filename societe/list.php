@@ -160,39 +160,76 @@ $checkedprofid6=0;
 //$checkedprofid6=((($tmp = $langs->transnoentities("ProfId6".$mysoc->country_code)) && $tmp != "ProfId6".$mysoc->country_code && $tmp != '-') ? 1 : 0);
 $checkprospectlevel=(in_array($contextpage, array('prospectlist')) ? 1 : 0);
 $checkstcomm=(in_array($contextpage, array('prospectlist')) ? 1 : 0);
-$arrayfields=array(
-	's.rowid'=>array('label'=>"TechnicalID", 'checked'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0), 'enabled'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0)),
-	's.nom'=>array('label'=>"ThirdPartyName", 'checked'=>1),
-	's.name_alias'=>array('label'=>"AliasNameShort", 'checked'=>1),
-	's.barcode'=>array('label'=>"Gencod", 'checked'=>1, 'enabled'=>(! empty($conf->barcode->enabled))),
-	's.code_client'=>array('label'=>"CustomerCodeShort", 'checked'=>$checkedcustomercode),
-	's.code_fournisseur'=>array('label'=>"SupplierCodeShort", 'checked'=>$checkedsuppliercode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
-	's.code_compta'=>array('label'=>"CustomerAccountancyCodeShort", 'checked'=>$checkedcustomeraccountcode),
-	's.code_compta_fournisseur'=>array('label'=>"SupplierAccountancyCodeShort", 'checked'=>$checkedsupplieraccountcode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
-	's.town'=>array('label'=>"Town", 'checked'=>1),
-	's.zip'=>array('label'=>"Zip", 'checked'=>1),
-	'state.nom'=>array('label'=>"State", 'checked'=>0),
-	'region.nom'=>array('label'=>"Region", 'checked'=>0),
-	'country.code_iso'=>array('label'=>"Country", 'checked'=>0),
-	's.email'=>array('label'=>"Email", 'checked'=>0),
-	's.url'=>array('label'=>"Url", 'checked'=>0),
-	's.phone'=>array('label'=>"Phone", 'checked'=>1),
-	'typent.code'=>array('label'=>"ThirdPartyType", 'checked'=>$checkedtypetiers),
-	's.siren'=>array('label'=>"ProfId1Short", 'checked'=>$checkedprofid1),
-	's.siret'=>array('label'=>"ProfId2Short", 'checked'=>$checkedprofid2),
-	's.ape'=>array('label'=>"ProfId3Short", 'checked'=>$checkedprofid3),
-	's.idprof4'=>array('label'=>"ProfId4Short", 'checked'=>$checkedprofid4),
-	's.idprof5'=>array('label'=>"ProfId5Short", 'checked'=>$checkedprofid5),
-	's.idprof6'=>array('label'=>"ProfId6Short", 'checked'=>$checkedprofid6),
-	's.tva_intra'=>array('label'=>"VATIntra", 'checked'=>0),
-	'customerorsupplier'=>array('label'=>'Nature', 'checked'=>1),
-	's.fk_prospectlevel'=>array('label'=>"ProspectLevelShort", 'checked'=>$checkprospectlevel),
-	's.fk_stcomm'=>array('label'=>"StatusProsp", 'checked'=>$checkstcomm),
-	's.datec'=>array('label'=>"DateCreation", 'checked'=>0, 'position'=>500),
-	's.tms'=>array('label'=>"DateModificationShort", 'checked'=>0, 'position'=>500),
-	's.status'=>array('label'=>"Status", 'checked'=>1, 'position'=>1000),
-	's.import_key'=>array('label'=>"ImportId", 'checked'=>0, 'position'=>1100),
-);
+if ($_GET['leftmenu'] =="suppliers" || $_GET['mainmenu'] == "suppliers") {
+	$arrayfields=array(
+		's.rowid'=>array('label'=>"TechnicalID", 'checked'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0), 'enabled'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0)),
+		's.nom'=>array('label'=>"Proveedor", 'checked'=>1),
+		's.name_alias'=>array('label'=>"AliasNameShort", 'checked'=>1),
+		's.barcode'=>array('label'=>"Gencod", 'checked'=>1, 'enabled'=>(! empty($conf->barcode->enabled))),
+		's.code_client'=>array('label'=>"CustomerCodeShort", 'checked'=>$checkedcustomercode),
+		's.code_fournisseur'=>array('label'=>"SupplierCodeShort", 'checked'=>$checkedsuppliercode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
+		's.code_compta'=>array('label'=>"CustomerAccountancyCodeShort", 'checked'=>$checkedcustomeraccountcode),
+		's.code_compta_fournisseur'=>array('label'=>"SupplierAccountancyCodeShort", 'checked'=>$checkedsupplieraccountcode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
+		's.town'=>array('label'=>"Town", 'checked'=>1),
+		's.zip'=>array('label'=>"Zip", 'checked'=>1),
+		'state.nom'=>array('label'=>"State", 'checked'=>0),
+		'region.nom'=>array('label'=>"Region", 'checked'=>0),
+		'country.code_iso'=>array('label'=>"Country", 'checked'=>0),
+		's.email'=>array('label'=>"Email", 'checked'=>0),
+		's.url'=>array('label'=>"Url", 'checked'=>0),
+		's.phone'=>array('label'=>"Phone", 'checked'=>1),
+		'typent.code'=>array('label'=>"Tipo de Proveedor", 'checked'=>$checkedtypetiers),
+		's.siren'=>array('label'=>"ProfId1Short", 'checked'=>$checkedprofid1),
+		's.siret'=>array('label'=>"ProfId2Short", 'checked'=>$checkedprofid2),
+		's.ape'=>array('label'=>"ProfId3Short", 'checked'=>$checkedprofid3),
+		's.idprof4'=>array('label'=>"ProfId4Short", 'checked'=>$checkedprofid4),
+		's.idprof5'=>array('label'=>"ProfId5Short", 'checked'=>$checkedprofid5),
+		's.idprof6'=>array('label'=>"ProfId6Short", 'checked'=>$checkedprofid6),
+		's.tva_intra'=>array('label'=>"VATIntra", 'checked'=>0),
+		'customerorsupplier'=>array('label'=>'Nature', 'checked'=>1),
+		's.fk_prospectlevel'=>array('label'=>"ProspectLevelShort", 'checked'=>$checkprospectlevel),
+		's.fk_stcomm'=>array('label'=>"StatusProsp", 'checked'=>$checkstcomm),
+		's.datec'=>array('label'=>"DateCreation", 'checked'=>0, 'position'=>500),
+		's.tms'=>array('label'=>"DateModificationShort", 'checked'=>0, 'position'=>500),
+		's.status'=>array('label'=>"Status", 'checked'=>1, 'position'=>1000),
+		's.import_key'=>array('label'=>"ImportId", 'checked'=>0, 'position'=>1100),
+	);
+}
+else{
+	$arrayfields=array(
+		's.rowid'=>array('label'=>"TechnicalID", 'checked'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0), 'enabled'=>($conf->global->MAIN_SHOW_TECHNICAL_ID?1:0)),
+		's.nom'=>array('label'=>"ThirdPartyName", 'checked'=>1),
+		's.name_alias'=>array('label'=>"AliasNameShort", 'checked'=>1),
+		's.barcode'=>array('label'=>"Gencod", 'checked'=>1, 'enabled'=>(! empty($conf->barcode->enabled))),
+		's.code_client'=>array('label'=>"CustomerCodeShort", 'checked'=>$checkedcustomercode),
+		's.code_fournisseur'=>array('label'=>"SupplierCodeShort", 'checked'=>$checkedsuppliercode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
+		's.code_compta'=>array('label'=>"CustomerAccountancyCodeShort", 'checked'=>$checkedcustomeraccountcode),
+		's.code_compta_fournisseur'=>array('label'=>"SupplierAccountancyCodeShort", 'checked'=>$checkedsupplieraccountcode, 'enabled'=>(! empty($conf->fournisseur->enabled))),
+		's.town'=>array('label'=>"Town", 'checked'=>1),
+		's.zip'=>array('label'=>"Zip", 'checked'=>1),
+		'state.nom'=>array('label'=>"State", 'checked'=>0),
+		'region.nom'=>array('label'=>"Region", 'checked'=>0),
+		'country.code_iso'=>array('label'=>"Country", 'checked'=>0),
+		's.email'=>array('label'=>"Email", 'checked'=>0),
+		's.url'=>array('label'=>"Url", 'checked'=>0),
+		's.phone'=>array('label'=>"Phone", 'checked'=>1),
+		'typent.code'=>array('label'=>"ThirdPartyType", 'checked'=>$checkedtypetiers),
+		's.siren'=>array('label'=>"ProfId1Short", 'checked'=>$checkedprofid1),
+		's.siret'=>array('label'=>"ProfId2Short", 'checked'=>$checkedprofid2),
+		's.ape'=>array('label'=>"ProfId3Short", 'checked'=>$checkedprofid3),
+		's.idprof4'=>array('label'=>"ProfId4Short", 'checked'=>$checkedprofid4),
+		's.idprof5'=>array('label'=>"ProfId5Short", 'checked'=>$checkedprofid5),
+		's.idprof6'=>array('label'=>"ProfId6Short", 'checked'=>$checkedprofid6),
+		's.tva_intra'=>array('label'=>"VATIntra", 'checked'=>0),
+		'customerorsupplier'=>array('label'=>'Nature', 'checked'=>1),
+		's.fk_prospectlevel'=>array('label'=>"ProspectLevelShort", 'checked'=>$checkprospectlevel),
+		's.fk_stcomm'=>array('label'=>"StatusProsp", 'checked'=>$checkstcomm),
+		's.datec'=>array('label'=>"DateCreation", 'checked'=>0, 'position'=>500),
+		's.tms'=>array('label'=>"DateModificationShort", 'checked'=>0, 'position'=>500),
+		's.status'=>array('label'=>"Status", 'checked'=>1, 'position'=>1000),
+		's.import_key'=>array('label'=>"ImportId", 'checked'=>0, 'position'=>1100),
+	);
+}
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
@@ -637,7 +674,7 @@ if ($user->rights->societe->client->voir || $socid)
 }
 if ($moreforfilter)
 {
-	print '<div class="liste_titre liste_titre_bydiv centpercent">';
+	print '<div class="liste_titre liste_titre_bydiv centpercent" style="display: none;">';
 	print $moreforfilter;
 	$parameters=array('type'=>$type);
 	$reshook=$hookmanager->executeHooks('printFieldPreListTitle',$parameters);    // Note that $action and $object may have been modified by hook

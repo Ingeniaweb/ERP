@@ -88,7 +88,8 @@ $form = new Form($db);
 if ($object->id > 0)
 {
 	$upload_dir = $conf->projet->dir_output.'/'.dol_sanitizeFileName($object->ref);
-
+	$val=dol_sanitizeFileName($object->ref);
+	$_SESSION['projet_title']=$val;
     // To verify role of users
     //$userAccess = $object->restrictedProjectArea($user,'read');
     $userWrite  = $object->restrictedProjectArea($user,'write');
@@ -114,10 +115,11 @@ if ($object->id > 0)
 	$morehtmlref='<div class="refidno">';
 	// Title
 	$morehtmlref.=$object->title;
+
 	// Thirdparty
 	if ($object->thirdparty->id > 0)
 	{
-	    $morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'project');
+	    $morehtmlref.='<br>Cliente : ' . $object->thirdparty->getNomUrl(1, 'project');
 	}
 	$morehtmlref.='</div>';
 
@@ -150,6 +152,7 @@ if ($object->id > 0)
 	$modulepart = 'project';
 	$permission = ($userWrite > 0);
 	$permtoedit = ($userWrite > 0);
+
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 }

@@ -438,15 +438,7 @@ if (empty($user->rights->user->user->lire)) $includeonly=array($user->id);
 $moreforfilter.=$form->select_dolusers($search_usertoprocessid?$search_usertoprocessid:$usertoprocess->id, 'search_usertoprocessid', $user->rights->user->user->lire?0:0, null, 0, $includeonly, null, 0, 0, 0, '', 0, '', 'maxwidth200');
 $moreforfilter.='</div>';
 
-if (! empty($moreforfilter))
-{
-	print '<div class="liste_titre liste_titre_bydiv centpercent">';
-	print $moreforfilter;
-	$parameters=array();
-	$reshook=$hookmanager->executeHooks('printFieldPreListTitle',$parameters);    // Note that $action and $object may have been modified by hook
-	print $hookmanager->resPrint;
-	print '</div>';
-}
+
 
 
 print '<div class="div-table-responsive">';
@@ -463,7 +455,16 @@ print '<td class="liste_titre"></td>';
 print '<td class="liste_titre"></td>';
 print '<td class="liste_titre"></td>';
 print '<td class="liste_titre"></td>';
-print '<td class="liste_titre"></td>';
+
+if (! empty($moreforfilter))
+{
+	print '<td class="liste_titre>';
+	print $moreforfilter;
+	$parameters=array();
+	$reshook=$hookmanager->executeHooks('printFieldPreListTitle',$parameters);    // Note that $action and $object may have been modified by hook
+	print $hookmanager->resPrint;
+	print '</td>';
+}
 // Action column
 print '<td class="liste_titre nowrap" align="right">';
 $searchpicto=$form->showFilterAndCheckAddButtons(0);
@@ -473,7 +474,7 @@ print "</tr>\n";
 
 print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("Project").'</td>';
-print '<td>'.$langs->trans("ThirdParty").'</td>';
+print '<td>Cliente</td>';
 //print '<td>'.$langs->trans("RefTask").'</td>';
 print '<td>'.$langs->trans("Task").'</td>';
 print '<td align="right" class="maxwidth100">'.$langs->trans("PlannedWorkload").'</td>';
@@ -498,7 +499,7 @@ $holiday = new Holiday($db);
 $isavailable=array();
 
 $statusofholidaytocheck = '3';
-$isavailablefordayanduser = $holiday->verifDateHolidayForTimestamp($usertoprocess->id, $daytoparse, $statusofholiday);	// $daytoparse is a date with hours = 0
+$isavailablefordayanduser = $holiday->verifDateHolidayForTimestamp($usertoprocess->id, $daytoparse, $statusofholidaytocheck);	// $daytoparse is a date with hours = 0
 $isavailable[$daytoparse]=$isavailablefordayanduser;			// in projectLinesPerWeek later, we are using $firstdaytoshow and dol_time_plus_duree to loop on each day
 
 if (count($tasksarray) > 0)

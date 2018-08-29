@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - stocks
+# language file - Source file is en_US - stocks
 WarehouseCard=Ficha almacén
 Warehouse=Almacén
 Warehouses=Almacenes
@@ -62,8 +62,8 @@ QtyToDispatchShort=Cant. a enviar
 OrderDispatch=Recepción de productos
 RuleForStockManagementDecrease=Regla para la reducción automática de stocks (la disminución manual es siempre posible, incluso si se activa una regla de reducción automática)
 RuleForStockManagementIncrease=Regla para el aumento automático de stocks (el aumento manual es siempre posible, incluso si se activa una regla de aumento automático)
-DeStockOnBill=Decrementar los stocks físicos sobre las facturas/abonos a clientes
-DeStockOnValidateOrder=Decrementar los stocks físicos sobre los pedidos de clientes
+DeStockOnBill=Decrementar los stocks físicos sobre las facturas/abonos a Clientes
+DeStockOnValidateOrder=Decrementar los stocks físicos sobre los pedidos de Clientes
 DeStockOnShipment=Decrementar stock real en la validación de envíos
 DeStockOnShipmentOnClosing=Decrementar stock real en el cierre del envío
 ReStockOnBill=Incrementar los stocks físicos sobre las facturas/abonos de proveedores
@@ -81,7 +81,7 @@ RealStock=Stock real
 RealStockDesc=El stock físico o real es la stock que tiene actualmente en sus almacenes internos.
 RealStockWillAutomaticallyWhen=El stock real cambiará automáticamente de acuerdo con estas reglas (consulte la configuración del módulo de stock para cambiarlas):
 VirtualStock=Stock virtual
-VirtualStockDesc=El stock virtual es el stock que obtendrá una vez que todas las acciones pendientes que afecten a las existencias serán cerradas (pedidos a proveedor del proveedor recibidos, pedidos de clientes enviados, ...)
+VirtualStockDesc=El stock virtual es el stock que obtendrá una vez que todas las acciones pendientes que afecten a las existencias serán cerradas (pedidos a proveedor del proveedor recibidos, pedidos de Clientes enviados, ...)
 IdWarehouse=Id. almacén
 DescWareHouse=Descripción almacén
 LieuWareHouse=Localización almacén

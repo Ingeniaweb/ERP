@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - cron
+#  language file - Source file is en_US - cron
 # About page
 # Right
 Permission23101 = Consultar Tarea programada
@@ -61,7 +61,7 @@ CronStatusInactiveBtn=Inactivo
 CronTaskInactive=Esta tarea esta inactiva
 CronId=Id
 CronClassFile=Nombre de archivo con clase
-CronModuleHelp=Nombre del directorio del módulo Dolibarr (también funciona con módulos externos). <BR> Por ejemplo, para realizar un fetch del objeto Product /htdocs/<u>product</u>/class/product.class.php, el valor del módulo es <i>product</i>
+CronModuleHelp=Nombre del directorio del módulo (también funciona con módulos externos). <BR> Por ejemplo, para realizar un fetch del objeto Product /htdocs/<u>product</u>/class/product.class.php, el valor del módulo es <i>product</i>
 CronClassFileHelp=El nombre del archivo a cargar (la ruta es relativa al directorio raiz del servidor web). <BR> Por ejemplo para realizar un fetch del objeto Product /htdocs/product/class/<u>product.class.php</u>, el valor del nombre del archivo de la clase es <i>product.class.php</i>
 CronObjectHelp=El nombre del objeto a cargar. <BR> Por ejemplo para realizar un fetch del objeto Product /htdocs/product/class/product.class.php, el valor del nombre de la clase es <i>Product</i>
 CronMethodHelp=El método del objeto a lanzar. <BR> Por ejemplo para realizar un fetch del objeto Product /htdocs/product/class/product.class.php, el valor del método es <i>fecth</i>
@@ -72,7 +72,7 @@ CronFrom=De
 # Info
 # Common
 CronType=Tipo de tarea
-CronType_method=Llamar a un método de clase Dolibarr
+CronType_method=Llamar a un método de clase 
 CronType_command=Comando Shell
 CronCannotLoadClass=No se puede cargar el archivo de la clase %s (para usar la clase %s)
 CronCannotLoadObject=El archivo de la clase %s ha sido cargado, pero no se ha encontrado en ella el objeto %s

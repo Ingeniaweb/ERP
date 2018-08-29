@@ -952,7 +952,7 @@ if (empty($reshook))
  * View
  */
 
-llxHeader('', $langs->trans('CommRequests'), 'EN:Ask_Price_Supplier|FR:Demande_de_prix_fournisseur');
+llxHeader('', $langs->trans('Solicitudes'), 'EN:Ask_Price_Supplier|FR:Demande_de_prix_fournisseur');
 
 $form = new Form($db);
 $formother = new FormOther($db);
@@ -968,7 +968,7 @@ if ($action == 'create')
 {
 	$currency_code = $conf->currency;
 
-	print load_fiche_titre($langs->trans("NewAskPrice"));
+	print load_fiche_titre($langs->trans("Nueva solicitud"));
 
 	$soc = new Societe($db);
 	if ($socid > 0)
@@ -1044,18 +1044,18 @@ if ($action == 'create')
 	} else {
 		print '<td colspan="2">';
 		print $form->select_company('', 'socid', 's.fournisseur = 1', 'SelectThirdParty', 0, 0, null, 0, 'minwidth300');
-		print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&client=0&fournisseur=1&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
+		print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&client=0&fournisseur=1&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("Crear Proveedor").'</a>';
 		print '</td>';
 	}
 	print '</tr>' . "\n";
 
 	// Terms of payment
-	print '<tr><td class="nowrap">' . $langs->trans('PaymentConditionsShort') . '</td><td colspan="2">';
+	print '<tr id="terms_pay" style="display: none;"><td class="nowrap">' . $langs->trans('PaymentConditionsShort') . '</td><td colspan="2">';
 	$form->select_conditions_paiements(GETPOST('cond_reglement_id') > 0 ? GETPOST('cond_reglement_id') : $cond_reglement_id, 'cond_reglement_id', -1, 1);
 	print '</td></tr>';
 
 	// Mode of payment
-	print '<tr><td>' . $langs->trans('PaymentMode') . '</td><td colspan="2">';
+	print '<tr id="mode_pay" style="display: none;"><td>' . $langs->trans('PaymentMode') . '</td><td colspan="2">';
 	$form->select_types_paiements(GETPOST('mode_reglement_id') > 0 ? GETPOST('mode_reglement_id') : $mode_reglement_id, 'mode_reglement_id');
 	print '</td></tr>';
 
@@ -1065,15 +1065,15 @@ if ($action == 'create')
 		$form->select_comptes(GETPOST('fk_account')>0 ? GETPOST('fk_account','int') : $fk_account, 'fk_account', 0, '', 1);
 		print '</td></tr>';
 	}
-
+/*
 	// Shipping Method
 	if (! empty($conf->expedition->enabled)) {
-		print '<tr><td>' . $langs->trans('SendingMethod') . '</td><td colspan="2">';
+		print '<tr id="mode_ship" style="display: none;"><td>' . $langs->trans('SendingMethod') . '</td><td colspan="2">';
 		print $form->selectShippingMethod(GETPOST('shipping_method_id') > 0 ? GETPOST('shipping_method_id', 'int') : $shipping_method_id, 'shipping_method_id', '', 1);
 		print '</td></tr>';
 	}
-
-	// Delivery date (or manufacturing)
+*/		
+/*	// Delivery date (or manufacturing)
 	print '<tr><td>' . $langs->trans("DeliveryDate") . '</td>';
 	print '<td colspan="2">';
 	$datedelivery = dol_mktime(0, 0, 0, GETPOST('liv_month'), GETPOST('liv_day'), GETPOST('liv_year'));
@@ -1086,17 +1086,18 @@ if ($action == 'create')
 	} else {
 		$form->select_date($datedelivery ? $datedelivery : -1, 'liv_', '', '', '', "addask", 1, 1);
 	}
-	print '</td></tr>';
+	print '</td></tr>';*/
 
 
-	// Model
+	// Plantilla por defecto
+	/*
 	print '<tr>';
 	print '<td>' . $langs->trans("DefaultModel") . '</td>';
 	print '<td colspan="2">';
 	$liste = ModelePDFSupplierProposal::liste_modeles($db);
 	print $form->selectarray('model', $liste, ($conf->global->SUPPLIER_PROPOSAL_ADDON_PDF_ODT_DEFAULT ? $conf->global->SUPPLIER_PROPOSAL_ADDON_PDF_ODT_DEFAULT : $conf->global->SUPPLIER_PROPOSAL_ADDON_PDF));
 	print "</td></tr>";
-
+	*/
 	// Project
 	if (! empty($conf->projet->enabled))
 	{
@@ -1236,7 +1237,29 @@ if ($action == 'create')
 	print '</div>';
 
 	print "</form>";
-
+	print '<script>
+			$( "#options_plazo" ).blur(function() {
+ 		 		var d = $("#options_plazo").val();
+ 		 		var fecha = $("#options_date_entrega").val();
+ 		 		var Fecha = new Date();
+				var sFecha = fecha || (Fecha.getDate() + "/" + (Fecha.getMonth() +1) + "/" + Fecha.getFullYear());
+				var sep = sFecha.indexOf("/") != -1 ? "/" : "-";
+				var aFecha = sFecha.split(sep);
+				var fecha = aFecha[2]+"/"+aFecha[1]+"/"+aFecha[0];
+				fecha= new Date(fecha);
+				fecha.setDate(fecha.getDate()+parseInt(d));
+				var anno=fecha.getFullYear();
+				var mes= fecha.getMonth()+1;
+				var dia= fecha.getDate();
+				mes = (mes < 10) ? ("0" + mes) : mes;
+				dia = (dia < 10) ? ("0" + dia) : dia;
+				var fechaFinal = dia+sep+mes+sep+anno;
+				$("#options_date_entrega").val(fechaFinal);
+				$("#options_date_entregaday").val(dia);
+				$("#options_date_entregamonth").val(mes);
+				$("#options_date_entregayear").val(anno);
+			});
+		</script>';
 
 	// Show origin lines
 	if (! empty($origin) && ! empty($originid) && is_object($objectsrc)) {
@@ -1380,7 +1403,7 @@ if ($action == 'create')
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 
-	print '<div class="fichecenter">';
+	print '<div class="fichecenter" style="margin-top:100px;">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
 
@@ -1403,6 +1426,7 @@ if ($action == 'create')
 	print '</td>';
 	print '</tr>';
 
+	/*
 	// Delivery date
 	$langs->load('deliveries');
 	print '<tr><td>';
@@ -1425,7 +1449,7 @@ if ($action == 'create')
 	}
 	print '</td>';
 	print '</tr>';
-
+*/
 	// Payment mode
 	print '<tr>';
 	print '<td>';
@@ -1632,8 +1656,7 @@ if ($action == 'create')
 	global $forceall, $senderissupplier, $dateSelector;
 	$forceall=1; $senderissupplier=2; $dateSelector=0;     // $senderissupplier=2 is same than 1 but disable test on minimum qty.
 
-	if (! empty($object->lines))
-		$ret = $object->printObjectLines($action, $soc, $mysoc, $lineid, 1);
+	
 
 	// Form to add new line
 	if ($object->statut == SupplierProposal::STATUS_DRAFT && $user->rights->supplier_proposal->creer)
@@ -1647,6 +1670,10 @@ if ($action == 'create')
 			$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 		}
 	}
+
+	if (! empty($object->lines))
+		$ret = $object->printObjectLines($action, $soc, $mysoc, $lineid, 1);
+
 
 	print '</table>';
 	print '</div>';
@@ -1761,7 +1788,7 @@ if ($action == 'create')
 
 	if ($action != 'presend')
 	{
-		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<div class="fichecenter"  style="margin-top:100px;"><div class="fichehalfleft">';
 
 		/*
 		 * Documents generes
@@ -1807,3 +1834,25 @@ if ($action == 'create')
 // End of page
 llxFooter();
 $db->close();
+//popup para productos
+?>
+
+<script type='text/javascript' src='../funciones.js'></script>
+
+
+<div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);">
+            
+    <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
+    <div style="width:60%; height:90%; margin-left:20%; ">
+
+
+        <iframe id="fra_new_product" src='../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>
+
+
+    </div>
+    
+
+</div>
+<script>
+    document.getElementById('nuevo_producto').style.display='none';
+</script>

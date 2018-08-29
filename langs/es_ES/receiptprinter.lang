@@ -1,4 +1,4 @@
-# Dolibarr language file - Source file is en_US - receiptprinter
+# language file - Source file is en_US - receiptprinter
 ReceiptPrinterSetup=Configuración del módulo impresora de tickets
 PrinterAdded=Impresora %s añadida
 PrinterUpdated=Impresora %s actualizada
@@ -36,7 +36,7 @@ DOL_USE_FONT_A=Utilice la fuente A de la impresora
 DOL_USE_FONT_B=Utilice la fuente B de la impresora
 DOL_USE_FONT_C=Utilice la fuente C de la impresora
 DOL_PRINT_BARCODE=Imprimir códigos de barras
-DOL_PRINT_BARCODE_CUSTOMER_ID=Imprimir Identificación del cliente de código de barras
+DOL_PRINT_BARCODE_CUSTOMER_ID=Imprimir Identificación del Cliente de código de barras
 DOL_CUT_PAPER_FULL=Corte ticket completo
 DOL_CUT_PAPER_PARTIAL=Corte ticket parcial
 DOL_OPEN_DRAWER=Abrir cajón portamonedas

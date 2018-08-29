@@ -157,13 +157,15 @@ if ($id > 0 || ! empty($ref))
     $morehtmlref='<div class="refidno">';
     // Title
     $morehtmlref.=$object->title;
+    
+    
     // Thirdparty
     if ($object->thirdparty->id > 0)
     {
-        $morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'project');
+        $morehtmlref.='<br>Cliente : ' . $object->thirdparty->getNomUrl(1, 'project');
     }
     $morehtmlref.='</div>';
-
+    print '<input type="hidden" id="title_projet" value="'.$object->title.'">';
     // Define a complementary filter for search of next/prev ref.
     if (! $user->rights->projet->all->lire)
     {
@@ -186,12 +188,12 @@ if ($id > 0 || ! empty($ref))
 	else print $langs->trans('PrivateProject');
 	print '</td></tr>';
 
-    if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
+   /* if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
     {
     	// Opportunity status
     	print '<tr><td>'.$langs->trans("OpportunityStatus").'</td><td>';
     	$code = dol_getIdFromCode($db, $object->opp_status, 'c_lead_status', 'rowid', 'code');
-    	if ($code) print $langs->trans("OppStatus".$code);
+    	if ($code) print $langs->trans($code);
     	print '</td></tr>';
 
         // Opportunity percent
@@ -203,7 +205,7 @@ if ($id > 0 || ! empty($ref))
     	print '<tr><td>'.$langs->trans("OpportunityAmount").'</td><td>';
     	if (strcmp($object->opp_amount,'')) print price($object->opp_amount,'',$langs,0,0,0,$conf->currency);
     	print '</td></tr>';
-    }
+    }*/
 
     // Date start - end
     print '<tr><td>'.$langs->trans("DateStart").' - '.$langs->trans("DateEnd").'</td><td>';
@@ -256,14 +258,45 @@ if ($id > 0 || ! empty($ref))
     dol_fiche_end();
 
     print '<br>';
-
+   /* require_once '../config.php'; 
 	// Contacts lines (modules that overwrite templates must declare this into descriptor)
-	$dirtpls=array_merge($conf->modules_parts['tpl'],array('/core/tpl'));
-	foreach($dirtpls as $reldir)
-	{
-		$res=@include dol_buildpath($reldir.'/contacts.tpl.php');
-		if ($res) break;
+	print '<h3>Asociados al Proyecto</h3>	
+	<div class="div-table-responsive">
+	<div class="tagtable centpercent noborder allwidth">
+	<form class="tagtr liste_titre">
+		<div class="tagtd liste_titre" style="width:52%;">Nombre</div>
+
+		<div class="tagtd liste_titre">Grupo Trabajo</div>
+
+	</form></div></div>';
+	$sql ="SELECT * FROM llx_projet WHERE title like '$object->title'";
+	//print $sql . '<----- esta es la SQL';
+	$sql = mysqli_query($con, $sql);
+	while ($fila = mysqli_fetch_assoc($sql)) {
+		$tec1=$fila['tecnico1'];
+		$tec2=$fila['tecnico2'];
+		$tec3=$fila['tecnico3'];
+
+		$prog1=$fila['programador1'];
+		$prog2=$fila['programador2'];
 	}
+	$sql = "SELECT * FROM llx_adherent as ad inner join llx_adherent_type as at on ad.fk_adherent_type = at.rowid where ad.rowid='$tec1' or ad.rowid='$tec2' or ad.rowid='$tec3' or ad.rowid='$prog1' or ad.rowid='$prog2' ";
+	$sql = mysqli_query($con, $sql);
+	print '<div class="div-table-responsive">
+	<div class="tagtable centpercent noborder allwidth">';
+
+	while ($fila = mysqli_fetch_assoc($sql)) {
+
+		
+		print '<form class="tagtr">';
+		print '<div class="tagtd liste_titre">'.$fila['firstname'].'</div>';
+		print '<div class="tagtd liste_titre">'.$fila['libelle'].'</div>';
+
+
+		print '</form>';
+	}
+	print '</div></div>';
+*/
 }
 
 llxFooter();

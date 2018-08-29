@@ -1528,7 +1528,7 @@ function top_menu($head, $title='', $target='', $disablejs=0, $disablehead=0, $a
 			$mode=$arrayres['mode'];
 
 			// Link to help pages
-			if ($helpbaseurl && $helppage)
+			/*if ($helpbaseurl && $helppage)
 			{
 				$text='';
 				$title=$appli.'<br>';
@@ -1545,7 +1545,7 @@ function top_menu($head, $title='', $target='', $disablejs=0, $disablehead=0, $a
 				$text.='</a>';
 				//$toprightmenu.='</div>'."\n";
 				$toprightmenu.=@Form::textwithtooltip('',$title,2,1,$text,'login_block_elem',2);
-			}
+			}*/
 		}
 
 		// Logout link
@@ -1697,11 +1697,7 @@ function left_menu($menu_array_before, $helppagename='', $notused='', $menu_arra
 			}
 			else $appli.=" ".DOL_VERSION;
 			print '<div id="blockvmenuhelpapp" class="blockvmenuhelp">';
-			if ($doliurl) print '<a class="help" target="_blank" rel="noopener" href="'.$doliurl.'">';
-			else print '<span class="help">';
-			print $appli;
-			if ($doliurl) print '</a>';
-			else print '</span>';
+			if ($doliurl) print '<a class="help" target="_blank" rel="noopener" href="http://indagosl.com/indago/index.html">DoIndago</a>';
 			print '</div>'."\n";
 		}
 

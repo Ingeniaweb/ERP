@@ -126,7 +126,7 @@ if (empty($reshook))
 		}
 		if (empty($_POST["title"]))
 		{
-			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Label")), null, 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Nombre del Proyecto")), null, 'errors');
 			$error++;
 		}
 
@@ -238,7 +238,7 @@ if (empty($reshook))
 		{
 			$error++;
 			//$_GET["id"]=$_POST["id"]; // We return on the project card
-			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Label")), null, 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Nombre del Proyecto")), null, 'errors');
 		}
 
 		$db->begin();
@@ -517,14 +517,14 @@ if ($action == 'create' && $user->rights->projet->creer)
 	print '</td></tr>';
 
 	// Label
-	print '<tr><td><span class="fieldrequired">'.$langs->trans("Label").'</span></td><td><input size="80" type="text" name="title" value="'.dol_escape_htmltag(GETPOST("title",'none')).'" autofocus></td></tr>';
+	print '<tr><td><span class="fieldrequired">Nombre del Proyecto</span></td><td><input size="80" type="text" name="title" value="'.dol_escape_htmltag(GETPOST("title",'none')).'" autofocus></td></tr>';
 
-	// Thirdparty
+	// Cliente Modifica la parte Nuevo Proyecto
 	if ($conf->societe->enabled)
 	{
 		print '<tr><td>';
 		print (empty($conf->global->PROJECT_THIRDPARTY_REQUIRED)?'':'<span class="fieldrequired">');
-		print $langs->trans("ThirdParty");
+		print "Cliente";
 		print (empty($conf->global->PROJECT_THIRDPARTY_REQUIRED)?'':'</span>');
 		print '</td><td class="maxwidthonsmartphone">';
 		$filteronlist='';
@@ -536,7 +536,7 @@ if ($action == 'create' && $user->rights->projet->creer)
 			print $form->textwithtooltip($text.' '.img_help(),$texthelp,1);
 		}
 		else print $text;
-		print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
+		//print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
 		print '</td></tr>';
 	}
 
@@ -552,10 +552,44 @@ if ($action == 'create' && $user->rights->projet->creer)
 	// Visibility
 	print '<tr><td>'.$langs->trans("Visibility").'</td><td class="maxwidthonsmartphone">';
 	$array=array();
-	if (empty($conf->global->PROJECT_DISABLE_PRIVATE_PROJECT)) $array[0] = $langs->trans("PrivateProject");
+	//if (empty($conf->global->PROJECT_DISABLE_PRIVATE_PROJECT)) $array[0] = $langs->trans("PrivateProject");
 	if (empty($conf->global->PROJECT_DISABLE_PUBLIC_PROJECT)) $array[1] = $langs->trans("SharedProject");
 	print $form->selectarray('public',$array,GETPOST('public')?GETPOST('public'):$object->public);
 	print '</td></tr>';
+
+	// Asignado a Comercial
+	
+    /*print '<tr>';
+    print '<td>'.fieldLabel('AllocateCommercial','commercial_id').'</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone">';
+    print $form->select_dolusers((! empty($object->commercial_id)?$object->commercial_id:$user->id),'commercial_id',1); // Add current user by default
+    print '</td></tr>';*/
+/*
+    print '<td class="tecnico1">Técnico 1</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone tecnico1">';
+    print $form->select_all_tec((! empty($object->commercial_id)?$object->commercial_id:$user->id),'tec1',0); // Add current user by default
+    print '</td></tr>';
+
+    print '<td class="tecnico2">Técnico 2</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone tecnico2">';
+    print $form->select_all_tec((! empty($object->commercial_id)?$object->commercial_id:$user->id),'tec2',0); // Add current user by default
+    print '</td></tr>';
+
+    print '<td class="tecnico3">Técnico 3</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone tecnico3">';
+    print $form->select_all_tec((! empty($object->commercial_id)?$object->commercial_id:$user->id),'tec3',0); // Add current user by default
+    print '</td></tr>'; 
+
+    print '<td class="programador1">Programador 1</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone programador1">';
+    print $form->select_all_prog((! empty($object->commercial_id)?$object->commercial_id:$user->id),'prog1',0); // Add current user by default
+    print '</td></tr>';
+
+    print '<td class="programador2">Programador 2</td>';
+    print '<td colspan="3" class="maxwidthonsmartphone programador2">';
+    print $form->select_all_prog((! empty($object->commercial_id)?$object->commercial_id:$user->id),'prog2',0); // Add current user by default
+    print '</td></tr>';           
+*/
 
 	// Date start
 	print '<tr><td>'.$langs->trans("DateStart").'</td><td>';
@@ -572,20 +606,21 @@ if ($action == 'create' && $user->rights->projet->creer)
 		// Opportunity status
 		print '<tr><td>'.$langs->trans("OpportunityStatus").'</td>';
 		print '<td class="maxwidthonsmartphone">';
-		print $formproject->selectOpportunityStatus('opp_status', GETPOST('opp_status')?GETPOST('opp_status'):$object->opp_status);
+	//	print $formproject->selectOpportunityStatus('opp_status', GETPOST('opp_status')?GETPOST('opp_status'):$object->opp_status);
+		print $formproject->selectOpportunityStatus('opp_status', 2);
 		print '</tr>';
 
 		// Opportunity probability
-		print '<tr><td>'.$langs->trans("OpportunityProbability").'</td>';
+		/*print '<tr><td>'.$langs->trans("OpportunityProbability").'</td>';
 		print '<td><input size="5" type="text" id="opp_percent" name="opp_percent" value="'.dol_escape_htmltag(GETPOST('opp_percent')!=''?GETPOST('opp_percent'):'').'"><span class="hideonsmartphone"> %</span>';
 		print '<input type="hidden" name="opp_percent_not_set" id="opp_percent_not_set" value="'.dol_escape_htmltag(GETPOST('opp_percent')!=''?'0':'1').'">';
 		print '</td>';
-		print '</tr>';
+		print '</tr>';*/
 
 		// Opportunity amount
-		print '<tr><td>'.$langs->trans("OpportunityAmount").'</td>';
+		/*print '<tr><td>'.$langs->trans("OpportunityAmount").'</td>';
 		print '<td><input size="5" type="text" name="opp_amount" value="'.dol_escape_htmltag(GETPOST('opp_amount')!=''?GETPOST('opp_amount'):'').'"></td>';
-		print '</tr>';
+		print '</tr>';*/
 	}
 
 	// Budget
@@ -700,7 +735,7 @@ elseif ($object->id > 0)
 	{
 		$formquestion=array(
 			'text' => $langs->trans("ConfirmClone"),
-			array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company(GETPOST('socid', 'int')>0?GETPOST('socid', 'int'):$object->socid, 'socid', '', "None", 0, 0, null, 0, 'minwidth200')),
+			array('type' => 'other','name' => 'socid','label' => "Cliente",'value' => $form->select_company(GETPOST('socid', 'int')>0?GETPOST('socid', 'int'):$object->socid, 'socid', '', "None", 0, 0, null, 0, 'minwidth200')),
 			array('type' => 'checkbox', 'name' => 'clone_contacts',		'label' => $langs->trans("CloneContacts"), 			'value' => true),
 			array('type' => 'checkbox', 'name' => 'clone_tasks',   		'label' => $langs->trans("CloneTasks"), 			'value' => true),
 			array('type' => 'checkbox', 'name' => 'move_date',   		'label' => $langs->trans("CloneMoveDate"), 			'value' => true),
@@ -753,7 +788,7 @@ elseif ($object->id > 0)
 		{
 			print '<tr><td>';
 			print (empty($conf->global->PROJECT_THIRDPARTY_REQUIRED)?'':'<span class="fieldrequired">');
-			print $langs->trans("ThirdParty");
+			print "Cliente";
 			print (empty($conf->global->PROJECT_THIRDPARTY_REQUIRED)?'':'</span>');
 			print '</td><td>';
 			$filteronlist='';
@@ -771,7 +806,7 @@ elseif ($object->id > 0)
 		// Visibility
 		print '<tr><td>'.$langs->trans("Visibility").'</td><td>';
 		$array=array();
-		if (empty($conf->global->PROJECT_DISABLE_PRIVATE_PROJECT)) $array[0] = $langs->trans("PrivateProject");
+		//if (empty($conf->global->PROJECT_DISABLE_PRIVATE_PROJECT)) $array[0] = $langs->trans("PrivateProject");
 		if (empty($conf->global->PROJECT_DISABLE_PUBLIC_PROJECT)) $array[1] = $langs->trans("SharedProject");
 		print $form->selectarray('public',$array,$object->public);
 		print '</td></tr>';
@@ -790,7 +825,7 @@ elseif ($object->id > 0)
 			print '</tr>';
 
 		    // Opportunity probability
-		    print '<tr><td>'.$langs->trans("OpportunityProbability").'</td>';
+		    /*print '<tr><td>'.$langs->trans("OpportunityProbability").'</td>';
 		    print '<td><input size="5" type="text" id="opp_percent" name="opp_percent" value="'.(isset($_POST['opp_percent'])?GETPOST('opp_percent'):(strcmp($object->opp_percent,'')?vatrate($object->opp_percent):'')).'"> %';
             print '<span id="oldopppercent"></span>';
 		    print '</td>';
@@ -799,7 +834,7 @@ elseif ($object->id > 0)
 		    // Opportunity amount
 		    print '<tr><td>'.$langs->trans("OpportunityAmount").'</td>';
 		    print '<td><input size="5" type="text" name="opp_amount" value="'.(isset($_POST['opp_amount'])?GETPOST('opp_amount'):(strcmp($object->opp_amount,'')?price2num($object->opp_amount):'')).'"></td>';
-		    print '</tr>';
+		    print '</tr>';*/
 	    }
 
 		// Date start
@@ -862,8 +897,8 @@ elseif ($object->id > 0)
 		$morehtmlref='<div class="refidno">';
 		// Title
 		$morehtmlref.=$object->title;
-		// Thirdparty
-		$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ';
+		// Cliente en cada proyecto
+		$morehtmlref.='<br>Cliente : ';
 		if ($object->thirdparty->id > 0)
 		{
 			$morehtmlref .= $object->thirdparty->getNomUrl(1, 'project');
@@ -888,26 +923,27 @@ elseif ($object->id > 0)
 
 		// Visibility
 		print '<tr><td class="titlefield">'.$langs->trans("Visibility").'</td><td>';
-		if ($object->public) print $langs->trans('SharedProject');
-		else print $langs->trans('PrivateProject');
+		//if ($object->public) print $langs->trans('SharedProject');
+		print $langs->trans('PrivateProject');
 		print '</td></tr>';
+		
 
 		if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
 		{
 			// Opportunity status
 			print '<tr><td>'.$langs->trans("OpportunityStatus").'</td><td>';
 			$code = dol_getIdFromCode($db, $object->opp_status, 'c_lead_status', 'rowid', 'code');
-			if ($code) print $langs->trans("OppStatus".$code);
+			if ($code) print $langs->trans(/*"OppStatus".*/$code);
 			print '</td></tr>';
 
 			// Opportunity percent
-			print '<tr><td>'.$langs->trans("OpportunityProbability").'</td><td>';
+			/*print '<tr><td>'.$langs->trans("OpportunityProbability").'</td><td>';
 			if (strcmp($object->opp_percent,'')) print price($object->opp_percent, 0, $langs, 1, 0).' %';
 			print '</td></tr>';
 
 			// Opportunity Amount
 			print '<tr><td>'.$langs->trans("OpportunityAmount").'</td><td>';
-			/*if ($object->opp_status)
+			if ($object->opp_status)
 	        {
 	           print price($obj->opp_amount, 1, $langs, 1, 0, -1, $conf->currency);
 	        }*/

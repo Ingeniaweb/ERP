@@ -902,7 +902,7 @@ class UserGroup extends CommonObject
 		if (! empty($conf->global->LDAP_GROUP_FIELD_GROUPMEMBERS))
 		{
 			$valueofldapfield=array();
-			foreach($this->members as $key=>$val)    // This is array of users for group into dolibarr database.
+			foreach($this->members as $key=>$val)    // This is array of users for group into database.
 			{
 				$muser=new User($this->db);
 				$muser->fetch($val->id);
@@ -931,7 +931,7 @@ class UserGroup extends CommonObject
 		$this->ref = 'SPECIMEN';
 		$this->specimen=1;
 
-		$this->name='DOLIBARR GROUP SPECIMEN';
+		$this->name='GROUP SPECIMEN';
 		$this->note='This is a note';
 		$this->datec=time();
 		$this->datem=time();

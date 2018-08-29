@@ -439,15 +439,7 @@ if (empty($user->rights->user->user->lire)) $includeonly=array($user->id);
 $moreforfilter.=$form->select_dolusers($search_usertoprocessid?$search_usertoprocessid:$usertoprocess->id, 'search_usertoprocessid', $user->rights->user->user->lire?0:0, null, 0, $includeonly, null, 0, 0, 0, '', 0, '', 'maxwidth200');
 $moreforfilter.='</div>';
 
-if (! empty($moreforfilter))
-{
-	print '<div class="liste_titre liste_titre_bydiv centpercent">';
-	print $moreforfilter;
-	$parameters=array();
-	$reshook=$hookmanager->executeHooks('printFieldPreListTitle',$parameters);    // Note that $action and $object may have been modified by hook
-	print $hookmanager->resPrint;
-	print '</div>';
-}
+
 
 
 print '<div class="div-table-responsive">';
@@ -461,7 +453,16 @@ print '<td class="liste_titre"><input type="text" size="4" name="search_task_lab
 print '<td class="liste_titre"></td>';
 print '<td class="liste_titre"></td>';
 print '<td class="liste_titre"></td>';
-print '<td class="liste_titre"></td>';
+
+if (! empty($moreforfilter))
+{
+	print '<td class="liste_titre">';
+	print $moreforfilter;
+	$parameters=array();
+	$reshook=$hookmanager->executeHooks('printFieldPreListTitle',$parameters);    // Note that $action and $object may have been modified by hook
+	print $hookmanager->resPrint;
+	print '</td>';
+}
 for($i=0;$i<7;$i++)
 {
 	print '<td class="liste_titre"></td>';
@@ -475,7 +476,7 @@ print "</tr>\n";
 
 print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("Project").'</td>';
-print '<td>'.$langs->trans("ThirdParty").'</td>';
+print '<td>Cliente</td>';
 //print '<td>'.$langs->trans("RefTask").'</td>';
 print '<td>'.$langs->trans("Task").'</td>';
 print '<td align="right" class="maxwidth75">'.$langs->trans("PlannedWorkload").'</td>';

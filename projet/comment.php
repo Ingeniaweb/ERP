@@ -101,7 +101,7 @@ $morehtmlref = '<div class="refidno">';
 $morehtmlref .= $object->title;
 // Thirdparty
 if ($object->thirdparty->id > 0) {
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'project');
+	$morehtmlref .= '<br>Cliente : ' . $object->thirdparty->getNomUrl(1, 'project');
 }
 $morehtmlref .= '</div>';
 
