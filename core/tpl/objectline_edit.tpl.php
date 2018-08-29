@@ -117,19 +117,19 @@ $coldisplay=-1; // We remove first td
 	if ($object->element == 'supplier_proposal' || $object->element == 'order_supplier' || $object->element == 'invoice_supplier')	// We must have same test in printObjectLines
 	{
 	?>
-		<td align="right"><input id="fourn_ref" name="fourn_ref" class="flat" value="<?php echo $line->ref_fourn; ?>" size="12"></td>
+		<td align="center"><span>REFERENCIA</span><br /><input id="fourn_ref" name="fourn_ref" class="flat" value="<?php echo $line->ref_fourn; ?>" size="12"></td>
 	<?php
 	}
 
 	$coldisplay++;
 	if ($this->situation_counter == 1 || !$this->situation_cycle_ref) {
-		print '<td align="right">' . $form->load_tva('tva_tx', $line->tva_tx.($line->vat_src_code?(' ('.$line->vat_src_code.')'):''), $seller, $buyer, 0, $line->info_bits, $line->product_type, false, 1) . '</td>';
+		print '<td align="center"><span>IVA</span><br />' . $form->load_tva('tva_tx', $line->tva_tx.($line->vat_src_code?(' ('.$line->vat_src_code.')'):''), $seller, $buyer, 0, $line->info_bits, $line->product_type, false, 1) . '</td>';
 	} else {
-		print '<td align="right"><input size="1" type="text" class="flat right" name="tva_tx" value="' . price($line->tva_tx) . '" readonly />%</td>';
+		print '<td align="center"><span>IVA</span><br /><input size="1" type="text" class="flat right" name="tva_tx" value="' . price($line->tva_tx) . '" readonly />%</td>';
 	}
 
 	$coldisplay++;
-	print '<td align="right"><input type="text" class="flat right" size="5" id="price_ht" name="price_ht" value="' . (isset($line->pu_ht)?price($line->pu_ht,0,'',0):price($line->subprice,0,'',0)) . '"';
+	print '<td align="center"><span>PRECIO</span><br /><input type="text" class="flat right" size="5" id="price_ht" name="price_ht" value="' . (isset($line->pu_ht)?price($line->pu_ht,0,'',0):price($line->subprice,0,'',0)) . '"';
 	if ($this->situation_counter > 1) print ' readonly';
 	print '></td>';
 
@@ -151,7 +151,7 @@ $coldisplay=-1; // We remove first td
 		// for example always visible on invoice but must be visible only if stock module on and stock decrease option is on invoice validation and status is not validated
 		// must also not be output for most entities (proposal, intervention, ...)
 		//if($line->qty > $line->stock) print img_picto($langs->trans("StockTooLow"),"warning", 'style="vertical-align: bottom;"')." ";
-		print '<input size="3" type="text" class="flat right" name="qty" id="qty" value="' . $line->qty . '"';
+		print '<span>CANTIDAD</span><br /><input size="3" type="text" class="flat right" name="qty" id="qty" value="' . $line->qty . '"';
 		if ($this->situation_counter > 1) print ' readonly';
 		print '>';
 	} else { ?>
@@ -170,7 +170,7 @@ $coldisplay=-1; // We remove first td
 
 	<td align="right" class="nowrap"><?php $coldisplay++; ?>
 	<?php if (($line->info_bits & 2) != 2) {
-		print '<input size="1" type="text" class="flat right" name="remise_percent" id="remise_percent" value="' . $line->remise_percent . '"';
+		print '<span>DESCUENTO</span><br /><input size="1" type="text" class="flat right" name="remise_percent" id="remise_percent" value="' . $line->remise_percent . '"';
 		if ($this->situation_counter > 1) print ' readonly';
 		print '>%';
 	} else { ?>

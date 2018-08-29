@@ -723,6 +723,7 @@ if ($object->id > 0)
             print '<div class="inline-block divButAction"><a class="butActionRefused" title="'.dol_escape_js($langs->trans("ThirdPartyIsClosed")).'" href="#">'.$langs->trans("ThirdPartyIsClosed").'</a></div>';
         }
 
+		/*
 		if ($conf->supplier_proposal->enabled && $user->rights->supplier_proposal->creer)
 		{
 			$langs->load("supplier_proposal");
@@ -735,6 +736,7 @@ if ($object->id > 0)
 	        print '<a class="butActionRefused" title="'.dol_escape_js($langs->trans("ThirdPartyIsClosed")).'" href="#">'.$langs->trans("AddSupplierProposal").'</a>';
 	      }
 		}
+		*/
 
 	    if ($user->rights->fournisseur->commande->creer)
 		{

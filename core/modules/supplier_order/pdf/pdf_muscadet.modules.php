@@ -727,7 +727,7 @@ class pdf_muscadet extends ModelePDFSuppliersOrders
         	$pdf->SetFont('','', $default_font_size - 2);
         	$pdf->SetXY($posxval, $posy);
         	$lib_mode_reg=$outputlangs->transnoentities("PaymentType".$object->mode_reglement_code)!=('PaymentType'.$object->mode_reglement_code)?$outputlangs->transnoentities("PaymentType".$object->mode_reglement_code):$outputlangs->convToOutputCharset($object->mode_reglement);
-        	$pdf->MultiCell(80, 5, $lib_mode_reg,0,'L');
+        	$pdf->MultiCell(200, 5, $lib_mode_reg,0,'L');
 
         	$posy=$pdf->GetY()+2;
         }

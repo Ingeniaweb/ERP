@@ -99,7 +99,14 @@ $day_lim	= GETPOST('day_lim','int');
 $month_lim	= GETPOST('month_lim','int');
 $year_lim	= GETPOST('year_lim','int');
 $toselect = GETPOST('toselect', 'array');
-
+//fecha factura =checbox para filtrar o no por la fecha de la factura
+$fecha_factura=GETPOST('fecha_factura','alpha');
+$search_date_ini=GETPOST('search_date_ini','alpha');
+$search_date_fin=GETPOST('search_date_fin','alpha');
+//fecha vencimiento=checbox para filtrar o no por la fecha de vencimiento
+$fecha_vencimiento=GETPOST('fecha_vencimiento','alpha');
+$search_date_lim_ini=GETPOST('search_date_lim_ini','alpha');
+$search_date_lim_fin=GETPOST('search_date_lim_fin','alpha');
 $option = GETPOST('option');
 if ($option == 'late') {
 	$search_status = '1';
@@ -152,12 +159,12 @@ $arrayfields=array(
 	'f.datef'=>array('label'=>$langs->trans("DateInvoice"), 'checked'=>1),
 	'f.date_lim_reglement'=>array('label'=>$langs->trans("DateDue"), 'checked'=>1),
 	'p.ref'=>array('label'=>$langs->trans("ProjectRef"), 'checked'=>0),
-	's.nom'=>array('label'=>$langs->trans("ThirdParty"), 'checked'=>1),
+	's.nom'=>array('label'=>$langs->trans("Supplier"), 'checked'=>1),
 	's.town'=>array('label'=>$langs->trans("Town"), 'checked'=>1),
 	's.zip'=>array('label'=>$langs->trans("Zip"), 'checked'=>1),
 	'state.nom'=>array('label'=>$langs->trans("StateShort"), 'checked'=>0),
 	'country.code_iso'=>array('label'=>$langs->trans("Country"), 'checked'=>0),
-	'typent.code'=>array('label'=>$langs->trans("ThirdPartyType"), 'checked'=>$checkedtypetiers),
+	'typent.code'=>array('label'=>$langs->trans("Tipo de Proveedor"), 'checked'=>$checkedtypetiers),
 	'f.fk_mode_reglement'=>array('label'=>$langs->trans("PaymentMode"), 'checked'=>1),
 	'f.total_ht'=>array('label'=>$langs->trans("AmountHT"), 'checked'=>1),
 	'f.total_vat'=>array('label'=>$langs->trans("AmountVAT"), 'checked'=>0),
@@ -224,6 +231,12 @@ if (empty($reshook))
 		$search_type_thirdparty='';
 		$year="";
 		$month="";
+		$fecha_factura='';
+		$search_date_ini='';
+		$search_date_fin='';
+		$fecha_vencimiento='';
+		$search_date_lim_ini='';
+		$search_date_lim_fin='';		
 		$day="";
 		$year_lim="";
 		$month_lim="";
@@ -258,6 +271,8 @@ $formcompany=new FormCompany($db);
 $thirdparty=new Societe($db);
 
 llxHeader('',$langs->trans("SuppliersInvoices"),'EN:Suppliers_Invoices|FR:FactureFournisseur|ES:Facturas_de_proveedores');
+//incluyo archivo funciones.js
+print '<script type="text/javascript" src="../../funciones.js"></script>';
 
 $sql = "SELECT";
 if ($search_all || $search_product_category > 0) $sql = 'SELECT DISTINCT';
@@ -363,6 +378,17 @@ if ($filter && $filter != -1)
 		$sql .= ' AND ' . $db->escape(trim($filt[0])) . ' = ' . $db->escape(trim($filt[1]));
 	}
 }
+// fechas de inicio y fin para fecha de factura y fecha límite de factura
+if($search_date_ini >0 && $fecha_factura=='checked'){
+
+	$sql.= " AND f.datef >= '".$search_date_ini."' AND f.datef <='".$search_date_fin."'";
+}
+
+if($search_date_lim_ini >0 && $fecha_vencimiento=='checked'){
+
+	$sql.= " AND f.date_lim_reglement >= '".$search_date_lim_ini."' AND f.date_lim_reglement <='".$search_date_lim_fin."'";
+}
+
 if ($search_sale > 0) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$db->escape($search_sale);
 if ($search_user > 0)
 {
@@ -432,6 +458,12 @@ if ($resql)
 	if ($day_lim) 				$param.='&day_lim='.urlencode($day_lim);
 	if ($month_lim) 			$param.='&month_lim='.urlencode($month_lim);
 	if ($year_lim)  			$param.='&year_lim=' .urlencode($year_lim);
+	if ($fecha_factura)		 $param.='&fecha_factura=' .urlencode($fecha_factura);
+	if ($search_date_ini)	 $param.='&search_date_ini=' .urlencode($search_date_ini);
+	if ($search_date_fin)	 $param.='&search_date_fin=' .urlencode($search_date_fin);
+	if ($fecha_vencimiento)	 $param.='&fecha_vencimiento=' .urlencode($fecha_vencimiento);
+	if ($search_date_lim_ini)	 $param.='&search_date_lim_ini=' .urlencode($search_date_lim_ini);
+	if ($search_date_lim_fin)	 $param.='&search_date_lim_fin=' .urlencode($search_date_lim_fin);	
 	if ($search_ref)          	$param.='&search_ref='.urlencode($search_ref);
 	if ($search_refsupplier) 	$param.='&search_refsupplier='.urlencode($search_refsupplier);
 	if ($search_label)      	$param.='&search_label='.urlencode($search_label);
@@ -533,7 +565,7 @@ if ($resql)
  	{
  		$langs->load("commercial");
  		$moreforfilter.='<div class="divsearchfield">';
- 		$moreforfilter.=$langs->trans('ThirdPartiesOfSaleRepresentative'). ': ';
+ 		$moreforfilter.=$langs->trans('SuppliersOfSaleRepresentative'). ': ';
 		$moreforfilter.=$formother->select_salesrepresentatives($search_sale, 'search_sale', $user, 0, 1, 'maxwidth200');
 	 	$moreforfilter.='</div>';
  	}
@@ -562,7 +594,7 @@ if ($resql)
 
 	if ($moreforfilter)
 	{
-   		print '<div class="liste_titre liste_titre_bydiv centpercent">';
+   		print '<div class="liste_titre liste_titre_bydiv centpercent" style="display: none;">';
 		print $moreforfilter;
 		print '</div>';
 	}
@@ -570,9 +602,9 @@ if ($resql)
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
-
+	print '<style>input{padding:1px !important;}</style>'; //Para dejar los inputs date con un tamaño pequeño
 	print '<div class="div-table-responsive">';
-	print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
+	print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'" style="font-size:13px;">'."\n";
 
 	// Line for filters
 	print '<tr class="liste_titre_filter">';
@@ -600,20 +632,23 @@ if ($resql)
 	// Date invoice
 	if (! empty($arrayfields['f.datef']['checked']))
 	{
-		print '<td class="liste_titre" align="center">';
-		if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="day" value="'.dol_escape_htmltag($day).'">';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="month" value="'.$month.'">';
-		$formother->select_year($year?$year:-1,'year',1, 20, 5);
+		print '<td class="liste_titre nowraponall" align="center">';
+		//if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_day" value="'.dol_escape_htmltag($search_day).'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="search_month" value="'.dol_escape_htmltag($search_month).'">';
+		//$formother->select_year($search_year?$search_year:-1,'search_year',1, 20, 5, 0, 0, '', 'width75');
+		$formother->select_date($search_date_ini?$search_date_ini:-1,$search_date_fin?$search_date_fin:-1,'search_date',1, 20, 5, 0, 0, '', 'width75');
 		print '</td>';
 	}
 	// Date due
+
 	if (! empty($arrayfields['f.date_lim_reglement']['checked']))
 	{
-		print '<td class="liste_titre" align="center">';
-		if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="day_lim" value="'.dol_escape_htmltag($day_lim).'">';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="month_lim" value="'.$month_lim.'">';
-		$formother->select_year($year_lim?$year_lim:-1,'year_lim',1, 20, 5);
-		print '<br><input type="checkbox" name="option" value="late"'.($option == 'late'?' checked':'').'> '.$langs->trans("Late");
+		print '<td class="liste_titre nowraponall" align="center">';
+		//if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_day_lim" value="'.dol_escape_htmltag($search_day_lim).'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="search_month_lim" value="'.dol_escape_htmltag($search_month_lim).'">';
+		//$formother->select_year($search_year_lim?$search_year_lim:-1,'search_year_lim',1, 20, 5, 0, 0, '', 'width75');
+		$formother->select_date($search_date_lim_ini?$search_date_lim_ini:-1,$search_date_lim_fin?$search_date_lim_fin:-1,'search_date_lim',1, 20, 5, 0, 0, '', 'width75');
+		//print '<br><input type="checkbox" name="option" value="late"'.($option == 'late'?' checked':'').' style="float:left; margin-left:25px;"><span style="color:#fff; float:left;" >&nbsp;&nbsp; '.$langs->trans("Late")."</span>";
 		print '</td>';
 	}
 	// Project
@@ -742,8 +777,19 @@ if ($resql)
 	if (! empty($arrayfields['f.ref']['checked']))                print_liste_field_titre($arrayfields['f.ref']['label'],$_SERVER['PHP_SELF'],'f.ref,f.rowid','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['f.ref_supplier']['checked']))       print_liste_field_titre($arrayfields['f.ref_supplier']['label'],$_SERVER["PHP_SELF"],'f.ref_supplier','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['f.label']['checked']))              print_liste_field_titre($arrayfields['f.label']['label'],$_SERVER['PHP_SELF'],"f.libelle,f.rowid",'',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['f.datef']['checked']))              print_liste_field_titre($arrayfields['f.datef']['label'],$_SERVER['PHP_SELF'],'f.datef,f.rowid','',$param,'align="center"',$sortfield,$sortorder);
-	if (! empty($arrayfields['f.date_lim_reglement']['checked'])) print_liste_field_titre($arrayfields['f.date_lim_reglement']['label'],$_SERVER['PHP_SELF'],"f.date_lim_reglement",'',$param,'align="center"',$sortfield,$sortorder);
+	if (! empty($arrayfields['f.datef']['checked'])) {
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=f.date_lim_reglement&sortorder=".$sortorder."&begin='";
+
+		$adicional='<input type="checkbox"  class="reposition"  id="fecha_factura" name="fecha_factura" value="checked" '.$fecha_factura.' title="Señalar para filtrar por la fecha de factura" onclick="actualizar('.$enlace.')"> ';		
+		print_liste_field_titre($arrayfields['f.datef']['label'],$_SERVER['PHP_SELF'],'f.datef,f.rowid','',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	}             
+	if (! empty($arrayfields['f.date_lim_reglement']['checked'])){
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=f.date_lim_reglement&sortorder=".$sortorder."&begin='";
+
+		$adicional= '<input type="checkbox"  class="reposition"  id="fecha_vencimiento" name="fecha_vencimiento" value="checked" '.$fecha_vencimiento.'  title="Señalar para filtrar por la fecha de vencimiento" onclick="actualizar('.$enlace.') "> ';
+		
+		print_liste_field_titre($arrayfields['f.date_lim_reglement']['label'],$_SERVER['PHP_SELF'],"f.date_lim_reglement",'',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	} 
 	if (! empty($arrayfields['p.ref']['checked']))                print_liste_field_titre($arrayfields['p.ref']['label'],$_SERVER['PHP_SELF'],"p.ref",'',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['s.nom']['checked']))                print_liste_field_titre($arrayfields['s.nom']['label'],$_SERVER['PHP_SELF'],'s.nom','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['s.town']['checked']))               print_liste_field_titre($arrayfields['s.town']['label'],$_SERVER["PHP_SELF"],'s.town','',$param,'',$sortfield,$sortorder);
@@ -1125,3 +1171,38 @@ else
 llxFooter();
 
 $db->close();
+?>
+<script>
+	window.onload=function(){
+		if(document.getElementById('search_date_ini')){
+			if(document.getElementById('fecha_factura').checked){
+				document.getElementById('search_date_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_fin')});
+				document.getElementById('search_date_fin').addEventListener('change',function(){capar_fechas('search_date_ini',this.id)});
+			}
+		}
+		if(document.getElementById('search_date_lim_ini')){
+			if(document.getElementById('fecha_vencimiento').checked){
+				document.getElementById('search_date_lim_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_lim_fin')});
+				document.getElementById('search_date_lim_fin').addEventListener('change',function(){capar_fechas('search_date_lim_ini',this.id)});	
+			}
+		}
+	}
+
+	function actualizar(enlace){
+		var ffa="&fecha_factura=";
+		var fve="&fecha_vencimiento=";
+		var ffai="&search_date_ini="+document.getElementById('search_date_ini').value;
+		var ffaf="&search_date_fin="+document.getElementById('search_date_fin').value;
+		var fvei="&search_date_lim_ini="+document.getElementById('search_date_lim_ini').value;
+		var fvef="&search_date_lim_fin="+document.getElementById('search_date_lim_fin').value;
+
+		if(document.getElementById('fecha_factura').checked) {
+			ffa=ffa+'checked';
+		}
+		if(document.getElementById('fecha_vencimiento').checked){
+			fve=fve+'checked';
+		}
+		enlace=enlace+ffa+fve+ffai+ffaf+fvei+fvef;
+		window.location.href=enlace;
+	}
+</script>

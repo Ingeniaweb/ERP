@@ -31,6 +31,8 @@
  */
 
 // Protection to avoid direct call of template
+
+
 if (empty($object) || ! is_object($object))
 {
 	print "Error, template page can't be called as URL";
@@ -59,6 +61,12 @@ $colspan = 3;	// Col total ht + col edit + col delete
 if (in_array($object->element,array('propal','commande','order','facture','facturerec','invoice','supplier_proposal','order_supplier','invoice_supplier'))) $colspan++;	// With this, there is a column move button
 //print $object->element;
 
+?>
+
+<!-- BEGIN PHP TEMPLATE objectline_create.tpl.php -->
+
+<!-- lineas de factura -->
+<?php
 // Lines for extrafield
 $objectline = null;
 if (!empty($extrafieldsline))
@@ -91,7 +99,9 @@ if (!empty($extrafieldsline))
 
 ?>
 
-<!-- BEGIN PHP TEMPLATE objectline_create.tpl.php -->
+
+
+
 <?php
 $nolinesbefore=(count($this->lines) == 0 || $forcetoshowtitlelines);
 if ($nolinesbefore) {
@@ -157,7 +167,33 @@ if ($nolinesbefore) {
 <?php
 }
 ?>
-<tr class="pair nodrag nodrop nohoverpair<?php echo ($nolinesbefore || $object->element=='contrat')?'':' liste_titre_create'; ?>">
+
+
+
+<!-- principio de lineas de factura o lineas de productos en factura -->
+<script>
+	function abre_cierra_div(cual,manda){
+		var divi=document.getElementById(cual);
+		if (divi.style.display=='none'){
+			divi.style.display='table-row';
+			manda.className='fa fa-chevron-up fa-2x';
+		}else{
+			divi.style.display='none';
+			manda.className="fa fa-chevron-down fa-2x";
+		}
+
+	}
+</script>
+
+<tr>
+	<td   colspan="<?php echo $colspan+6; ?>" style="text-align: right;">
+		Añadir Productos/Servicios <i class='fa fa-chevron-up fa-2x'  style="margin-right: 20px; margin-left:20px;color:#3a73a9;" onclick="abre_cierra_div('despliega_nw_pro', this)" id='llama'></i> 
+	</td>
+</tr>
+
+
+<tr class="pair nodrag nodrop nohoverpair<?php echo ($nolinesbefore || $object->element=='contrat')?'':' liste_titre_create'; ?>" style="display:table-row; margin-bottom: 10px;" id="despliega_nw_pro">
+
 <?php
 if (! empty($conf->global->MAIN_VIEW_LINE_NUMBER)) {
 	$coldisplay=2;
@@ -168,9 +204,10 @@ if (! empty($conf->global->MAIN_VIEW_LINE_NUMBER)) {
 else {
 	$coldisplay=0;
 }
+
 ?>
 
-	<td class="nobottom linecoldescription minwidth500imp">
+	<td class="nobottom linecoldescription minwidth500imp" colspan="<?php echo $colspan; ?>">
 
 	<?php
 
@@ -218,7 +255,7 @@ else {
 		if ($forceall >= 0) echo '<br>';
 		echo '<span class="prod_entry_mode_predef">';
 		echo '<label for="prod_entry_mode_predef">';
-		echo '<input type="radio" class="prod_entry_mode_predef" name="prod_entry_mode" id="prod_entry_mode_predef" value="predef"'.(GETPOST('prod_entry_mode')=='predef'?' checked':'').'> ';
+		echo '<input type="radio" class="prod_entry_mode_predef" name="prod_entry_mode" id="prod_entry_mode_predef" value="predef"'.(GETPOST('prod_entry_mode')=='predef'?' checked':'checked').'> ';
 		if (empty($senderissupplier))
 		{
 			if (! empty($conf->product->enabled) && empty($conf->service->enabled)) echo $langs->trans('PredefinedProductsToSell');
@@ -269,8 +306,15 @@ else {
 
 			$form->select_produits_fournisseurs($object->socid, GETPOST('idprodfournprice'), 'idprodfournprice', '', '', $ajaxoptions, 1, $alsoproductwithnosupplierprice);
 		}
+		
+
 		echo '<input type="hidden" name="pbq" id="pbq" value="">';
 		echo '</span>';
+		?>
+		<br>
+		<div onclick="ver('nuevo_producto')" class='button buttongen' style='margin-left:50px; margin-left:84%; margin-top:10px; font-size:11px;'>Nuevo Producto</div>
+		<?php
+		
 	}
 
 	if (is_object($hookmanager) && empty($senderissupplier))
@@ -319,12 +363,12 @@ else {
 		<td class="nobottom linecolresupplier"><input id="fourn_ref" name="fourn_ref" class="flat maxwidth75" value="<?php echo (isset($_POST["fourn_ref"])?GETPOST("fourn_ref",'alpha',2):''); ?>"></td>
 	<?php } ?>
 
-	<td class="nobottom linecolvat" align="right"><?php
+	<td class="nobottom linecolvat" align="center"><span >IVA<br></span> <?php
 	if ($seller->tva_assuj == "0") echo '<input type="hidden" name="tva_tx" id="tva_tx" value="0">'.vatrate(0, true);
 	else echo $form->load_tva('tva_tx', (isset($_POST["tva_tx"])?GETPOST("tva_tx",'alpha',2):-1), $seller, $buyer, 0, 0, '', false, 1);
 	?>
 	</td>
-	<td class="nobottom linecoluht" align="right">
+	<td class="nobottom linecoluht" align="center"><span >PRECIO<br></span>
 	<input type="text" size="5" name="price_ht" id="price_ht" class="flat right" value="<?php echo (isset($_POST["price_ht"])?GETPOST("price_ht",'alpha',2):''); ?>">
 	</td>
 
@@ -339,7 +383,7 @@ else {
 	<input type="text" size="5" name="price_ttc" id="price_ttc" class="flat" value="<?php echo (isset($_POST["price_ttc"])?GETPOST("price_ttc",'alpha',2):''); ?>">
 	</td>
 	<?php } ?>
-	<td class="nobottom linecolqty" align="right"><input type="text" size="2" name="qty" id="qty" class="flat right" value="<?php echo (isset($_POST["qty"])?GETPOST("qty",'alpha',2):1); ?>">
+	<td class="nobottom linecolqty" align="center"><span>CANTIDAD<br></span><input type="text" size="2" name="qty" id="qty" class="flat right" value="<?php echo (isset($_POST["qty"])?GETPOST("qty",'alpha',2):1); ?>">
 	</td>
 	<?php
 	if($conf->global->PRODUCT_USE_UNITS)
@@ -349,7 +393,7 @@ else {
 		print '</td>';
 	}
 	?>
-	<td class="nobottom nowrap linecoldiscount" align="right"><input type="text" size="1" name="remise_percent" id="remise_percent" class="flat right" value="<?php echo (isset($_POST["remise_percent"])?GETPOST("remise_percent",'alpha',2):$buyer->remise_percent); ?>"><span class="hideonsmartphone">%</span></td>
+	<td class="nobottom nowrap linecoldiscount" align="center"><span>DTO.<br></span><input type="text" size="1" name="remise_percent" id="remise_percent" class="flat right" value="<?php echo (isset($_POST["remise_percent"])?GETPOST("remise_percent",'alpha',2):$buyer->remise_percent); ?>"><span class="hideonsmartphone">%</span></td>
 	<?php
 	if ($this->situation_cycle_ref) {
 		$coldisplay++;
@@ -359,13 +403,13 @@ else {
 	{
 		if (!empty($user->rights->margins->creer)) {
 		?>
-		<td align="right" class="nobottom margininfos linecolmargin">
+		<td align="center" class="nobottom margininfos linecolmargin">
 			<!-- For predef product -->
 			<?php if (! empty($conf->product->enabled) || ! empty($conf->service->enabled)) { ?>
 			<select id="fournprice_predef" name="fournprice_predef" class="flat" style="display: none;"></select>
 			<?php } ?>
 			<!-- For free product -->
-			<input type="text" size="5" id="buying_price" name="buying_price" class="flat right" value="<?php echo (isset($_POST["buying_price"])?GETPOST("buying_price",'alpha',2):''); ?>">
+			<span>Precio Compra<br></span><input type="text" size="5" id="buying_price" name="buying_price" class="flat right" value="<?php echo (isset($_POST["buying_price"])?GETPOST("buying_price",'alpha',2):''); ?>">
 		</td>
 		<?php
 		$coldisplay++;
@@ -391,10 +435,14 @@ else {
 		}
 	}
 	?>
-	<td class="nobottom linecoledit" align="center" valign="middle" colspan="<?php echo $colspan; ?>">
+	<td class="nobottom linecoledit" align="center" valign="middle">
 		<input type="submit" class="button" value="<?php echo $langs->trans('Add'); ?>" name="addline" id="addline">
 	</td>
+
 </tr>
+
+<!--//***************** fin de entrada de productos-->
+
 
 <?php
 if (is_object($objectline)) {
@@ -487,6 +535,7 @@ if ((! empty($conf->service->enabled) || ($object->element == 'contrat')) && $da
 	print '</script>'
 	?>
 	</td>
+
 	</tr>
 <?php
 }
@@ -687,7 +736,8 @@ jQuery(document).ready(function() {
     	      		/* Define default price at loading */
     	      		var defaultprice = $("#fournprice_predef").find('option:selected').attr("price");
     			    $("#buying_price").val(defaultprice);
-
+    			    var precio=$("#idprod option:selected").data('price');
+    			    $("#price_ht").val(precio);
     	      		$("#fournprice_predef").change(function() {
     		      		console.log("change on fournprice_predef");
     	      			/* Hide field buying_price according to choice into list (if 'inputprice' or not) */
@@ -728,6 +778,7 @@ jQuery(document).ready(function() {
             {
                     jQuery("#remise_percent").val(pbqpercent);
             }
+
         }
         else
         {
@@ -761,8 +812,8 @@ function setforfree() {
 	jQuery("#idprod").val('');
 	jQuery("#idprodfournprice").val('0');	// Set cursor on not selected product
 	jQuery("#search_idprodfournprice").val('');
-	jQuery("#prod_entry_mode_free").prop('checked',true).change();
-	jQuery("#prod_entry_mode_predef").prop('checked',false).change();
+	jQuery("#prod_entry_mode_free").prop('checked',false).change();
+	jQuery("#prod_entry_mode_predef").prop('checked',true).change();
 	jQuery("#price_ht").show();
 	jQuery("#multicurrency_price_ht").show();
 	jQuery("#price_ttc").show();	// May no exists
@@ -788,7 +839,7 @@ function setforpredef() {
 
 	jQuery("#prod_entry_mode_free").prop('checked',false).change();
 	jQuery("#prod_entry_mode_predef").prop('checked',true).change();
-	jQuery("#price_ht").val('').hide();
+	//jQuery("#price_ht").val('').hide();
 	jQuery("#multicurrency_price_ht").hide();
 	jQuery("#price_ttc").hide();	// May no exists
 	jQuery("#fourn_ref").hide();
@@ -808,5 +859,10 @@ function setforpredef() {
 }
 
 </script>
+
+
+
+
+
 
 <!-- END PHP TEMPLATE objectline_create.tpl.php -->

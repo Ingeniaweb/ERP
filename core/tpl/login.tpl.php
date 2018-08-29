@@ -92,11 +92,9 @@ $(document).ready(function () {
 
 
 <!-- Title with version -->
-<div class="login_table_title center" title="<?php echo dol_escape_htmltag($title); ?>">
+<div class="login_table_title center" title="Indago SL">
 <?php
-if ($disablenofollow) echo '<a class="login_table_title" href="https://www.dolibarr.org" target="_blank">';
-echo dol_escape_htmltag($title);
-if ($disablenofollow) echo '</a>';
+if ($disablenofollow) echo '<a class="login_table_title" href="http://indagosl.com/indago" target="_blank">DoIndago</a>';
 ?>
 </div>
 

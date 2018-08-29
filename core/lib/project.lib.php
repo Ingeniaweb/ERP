@@ -43,13 +43,14 @@ function project_prepare_head($object)
 	$head[$h][1] = $langs->trans("Project");
 	$head[$h][2] = 'project';
 	$h++;
-
+/*
 	$nbContact = count($object->liste_contact(-1,'internal')) + count($object->liste_contact(-1,'external'));
 	$head[$h][0] = DOL_URL_ROOT.'/projet/contact.php?id='.$object->id;
 	$head[$h][1] = $langs->trans("ProjectContact");
 	if ($nbContact > 0) $head[$h][1].= ' <span class="badge">'.$nbContact.'</span>';
 	$head[$h][2] = 'contact';
 	$h++;
+*/
 
 	if (! empty($conf->fournisseur->enabled) || ! empty($conf->propal->enabled) || ! empty($conf->commande->enabled)
 	|| ! empty($conf->facture->enabled) || ! empty($conf->contrat->enabled)
@@ -1493,10 +1494,10 @@ function print_projecttasks_array($db, $form, $socid, $projectsListId, $mytasks=
 
 		print '<tr class="liste_titre">';
 		print_liste_field_titre($title.' <span class="badge">'.$num.'</span>',$_SERVER["PHP_SELF"],"","","","",$sortfield,$sortorder);
-		print_liste_field_titre("ThirdParty",$_SERVER["PHP_SELF"],"","","","",$sortfield,$sortorder);
+		print_liste_field_titre("Cliente",$_SERVER["PHP_SELF"],"","","","",$sortfield,$sortorder);
 		if (! empty($conf->global->PROJECT_USE_OPPORTUNITIES))
 		{
-			print_liste_field_titre("OpportunityAmount","","","","",'align="right"',$sortfield,$sortorder);
+			print_liste_field_titre("Importe","","","","",'align="right"',$sortfield,$sortorder);
 			print_liste_field_titre("OpportunityStatus","","","","",'align="right"',$sortfield,$sortorder);
 		}
 		if (empty($conf->global->PROJECT_HIDE_TASKS))
@@ -1548,7 +1549,7 @@ function print_projecttasks_array($db, $form, $socid, $projectsListId, $mytasks=
 					print '</td>';
 					print '<td align="right">';
 					$code = dol_getIdFromCode($db, $objp->opp_status, 'c_lead_status', 'rowid', 'code');
-					if ($code) print $langs->trans("OppStatus".$code);
+					if ($code) print $langs->trans($code);
 					print '</td>';
 				}
 				if (empty($conf->global->PROJECT_HIDE_TASKS))

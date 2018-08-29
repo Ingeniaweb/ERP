@@ -678,9 +678,9 @@ function show_projects($conf, $langs, $db, $object, $backtopage='', $nocreatelin
             print '<td>'.$langs->trans("Name").'</td>';
             print '<td class="center">'.$langs->trans("DateStart").'</td>';
             print '<td class="center">'.$langs->trans("DateEnd").'</td>';
-            print '<td class="right">'.$langs->trans("OpportunityAmountShort").'</td>';
-            print '<td class="center">'.$langs->trans("OpportunityStatusShort").'</td>';
-            print '<td class="right">'.$langs->trans("OpportunityProbabilityShort").'</td>';
+           // print '<td class="right">'.$langs->trans("OpportunityAmountShort").'</td>';
+           // print '<td class="center">'.$langs->trans("OpportunityStatusShort").'</td>';
+           // print '<td class="right">'.$langs->trans("OpportunityProbabilityShort").'</td>';
             print '<td class="right">'.$langs->trans("Status").'</td>';
             print '</tr>';
 
@@ -712,7 +712,7 @@ function show_projects($conf, $langs, $db, $object, $backtopage='', $nocreatelin
                         print '<td class="center">'.dol_print_date($db->jdate($obj->do),"day").'</td>';
                         // Date end
                         print '<td class="center">'.dol_print_date($db->jdate($obj->de),"day").'</td>';
-                        // Opp amount
+                      /*  // Opp amount
                         print '<td class="right">';
                         if ($obj->opp_status_code)
                         {
@@ -726,7 +726,7 @@ function show_projects($conf, $langs, $db, $object, $backtopage='', $nocreatelin
 			            // Opp percent
             			print '<td align="right">';
             			if ($obj->opp_percent) print price($obj->opp_percent, 1, '', 1, 0).'%';
-            			print '</td>';
+            			print '</td>';*/
                         // Status
                         print '<td align="right">'.$projecttmp->getLibStatut(5).'</td>';
 
@@ -895,7 +895,7 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
     if (! $result) dol_print_error($db);
 
     $num = $db->num_rows($result);
-
+/*
     // Fields title search
     // --------------------------------------------------------------------
     print '<tr class="liste_titre">';
@@ -926,7 +926,7 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
     print $searchpicto;
     print '</td>';
     print '</tr>'."\n";
-
+*/
 
     // Fields title label
     // --------------------------------------------------------------------

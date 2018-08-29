@@ -577,15 +577,25 @@ else
             // Address
             if (($objsoc->typent_code == 'TE_PRIVATE' || ! empty($conf->global->CONTACT_USE_COMPANY_ADDRESS)) && dol_strlen(trim($object->address)) == 0) $object->address = $objsoc->address;	// Predefined with third party
             print '<tr><td><label for="address">'.$langs->trans("Address").'</label></td>';
-            print '<td colspan="'.$colspan.'"><textarea class="flat quatrevingtpercent" name="address" id="address" rows="'.ROWS_2.'">'.(GETPOST("address",'alpha')?GETPOST("address",'alpha'):$object->address).'</textarea></td>';
-
+            print '<td ><textarea class="flat" cols="40" name="address" id="address" rows="'.ROWS_2.'">'.(GETPOST("address",'alpha')?GETPOST("address",'alpha'):$object->address).'</textarea></td>';
+            print   '<style>
+                        .button {                            
+                            border: none;
+                            //color: white;
+                            padding: 15px 25px;
+                            text-align: center;
+                            text-decoration: none;
+                            display: inline-block;
+                            font-size: 16px;
+                            color: #008CBA !important;
+                    }</style>';
             if ($conf->use_javascript_ajax && $socid > 0)
             {
 	            $rowspan=3;
 	    		if (empty($conf->global->SOCIETE_DISABLE_STATE)) $rowspan++;
 
-	            print '<td valign="middle" align="center" rowspan="'.$rowspan.'">';
-		        print '<a href="#" id="copyaddressfromsoc">'.$langs->trans('CopyAddressFromSoc').'</a>';
+	            print '<td  align="left" >';
+		        print '<a class="button" href="#" id="copyaddressfromsoc">'.$langs->trans('CopyAddressFromSoc').'</a>';
 	            print '</td>';
             }
             print '</tr>';

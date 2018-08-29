@@ -1426,7 +1426,7 @@ if ($action == 'create')
 			$objectsrc->fetch_thirdparty();
 
 			$projectid			= (!empty($objectsrc->fk_project)?$objectsrc->fk_project:'');
-			//$ref_client			= (!empty($objectsrc->ref_client)?$object->ref_client:'');
+			$ref_client			= (!empty($objectsrc->ref_client)?$object->ref_client:'');
 
 			$soc = $objectsrc->thirdparty;
 			$cond_reglement_id 	= (!empty($objectsrc->cond_reglement_id)?$objectsrc->cond_reglement_id:(!empty($soc->cond_reglement_supplier_id)?$soc->cond_reglement_supplier_id:1));
@@ -1797,7 +1797,7 @@ if ($action == 'create')
 		print $form->select_incoterms((!empty($objectsrc->fk_incoterms) ? $objectsrc->fk_incoterms : ''), (!empty($objectsrc->location_incoterms)?$objectsrc->location_incoterms:''));
 		print '</td></tr>';
 	}
-
+/*
 	// Public note
 	print '<tr><td>'.$langs->trans('NotePublic').'</td>';
 	print '<td>';
@@ -1817,7 +1817,7 @@ if ($action == 'create')
 	print '</td>';
 	// print '<td><textarea name="note" wrap="soft" cols="60" rows="'.ROWS_5.'"></textarea></td>';
 	print '</tr>';
-
+*/
 	if (empty($reshook) && ! empty($extrafields->attribute_label))
 	{
 		print $object->showOptionals($extrafields, 'edit');
@@ -2147,7 +2147,7 @@ else
 
     	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
-    	print '<div class="fichecenter">';
+    	print '<div class="fichecenter" style="margin-top:100px;">';
     	print '<div class="fichehalfleft">';
     	print '<div class="underbanner clearboth"></div>';
 
@@ -2706,8 +2706,6 @@ else
 		$forceall=1; $senderissupplier=1; $dateSelector=0; $inputalsopricewithtax=1;
 
 		// Show object lines
-		if (! empty($object->lines))
-			$ret = $object->printObjectLines($action, $societe, $mysoc, $lineid, 1);
 
 		$num=count($object->lines);
 
@@ -2723,6 +2721,11 @@ else
 				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 			}
 		}
+
+		// Show object lines
+		if (! empty($object->lines))
+			$ret = $object->printObjectLines($action, $societe, $mysoc, $lineid, 1);
+
 
 		print '</table>';
 		print '</div>';
@@ -2889,7 +2892,7 @@ else
 
 	            if ($action != 'confirm_edit')
 	            {
-					print '<div class="fichecenter"><div class="fichehalfleft">';
+					print '<div class="fichecenter" style="margin-top:100px;"><div class="fichehalfleft">';
 
 					/*
 	                 * Documents generes
@@ -2943,3 +2946,26 @@ else
 // End of page
 llxFooter();
 $db->close();
+//popup para productos
+?>
+
+<script type='text/javascript' src='../../funciones.js'></script>
+
+
+<div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);" data-id='' >
+            
+    <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
+    <div style="width:60%; height:90%; margin-left:20%; ">
+
+
+        <iframe id="fra_new_product" src='../../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>
+
+
+    </div>
+    
+
+</div>
+<script>
+    document.getElementById('nuevo_producto').style.display='none';
+
+</script>

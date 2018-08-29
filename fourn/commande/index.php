@@ -324,7 +324,7 @@ if ($resql)
 {
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print '<th colspan="4">'.$langs->trans("LastModifiedOrders",$max).'</th></tr>';
+	print '<th colspan="4">Ultimos '.$max.' pedidos de proveedores modificados</th></tr>';
 
 	$num = $db->num_rows($resql);
 	if ($num)

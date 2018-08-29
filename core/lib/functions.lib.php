@@ -1102,9 +1102,9 @@ function dol_get_fiche_head($links=array(), $active='', $title='', $notab=0, $pi
 {
 	global $conf, $langs, $hookmanager;
 
-	$out="\n".'<div class="tabs" data-role="controlgroup" data-type="horizontal">'."\n";
+	$out="\n".'<div id="menu_01" class="tabs" data-role="controlgroup" data-type="horizontal">'."\n";
 
-	if ($morehtmlright) $out.='<div class="inline-block floatright tabsElem">'.$morehtmlright.'</div>';	// Output right area first so when space is missing, text is in front of tabs and not under.
+	if ($morehtmlright) $out.='<div  class="inline-block floatright tabsElem">'.$morehtmlright.'</div>';	// Output right area first so when space is missing, text is in front of tabs and not under.
 
 	// Show title
 	$showtitle=1;
@@ -1175,15 +1175,29 @@ function dol_get_fiche_head($links=array(), $active='', $title='', $notab=0, $pi
 				//print "x $i $active ".$links[$i][2]." z";
 				if ($isactive)
 				{
-					$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">';
-					$out.=$links[$i][1];
-					$out.='</a>'."\n";
+					if($links[$i][2] == "conso"){
+						$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">Consumición de Stock';
+						$out.='</a>'."\n";						
+					}
+					else{
+						$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">';
+						$out.=$links[$i][1];
+						$out.='</a>'."\n";						
+					}
+
 				}
 				else
 				{
-					$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabunactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">';
-					$out.=$links[$i][1];
-					$out.='</a>'."\n";
+					if($links[$i][2] == "conso"){
+						$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabunactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">Consumición de Stock';
+						$out.='</a>'."\n";					
+					}
+					else{
+						$out.='<a'.(! empty($links[$i][2])?' id="'.$links[$i][2].'"':'').' class="tabunactive tab inline-block'.($morecss?' '.$morecss:'').'" href="'.$links[$i][0].'">';
+						$out.=$links[$i][1];
+						$out.='</a>'."\n";						
+					}					
+
 				}
 			}
 			$out.='</div>';
@@ -3554,11 +3568,12 @@ function dol_print_error_email($prefixcode, $errormessage='', $errormessages=arr
  *	@param  string	$sortorder   Current sort order
  *  @param	string	$prefix		 Prefix for css. Use space after prefix to add your own CSS tag.
  *  @param	string	$tooltip	 Tooltip
+ *  @param  string  $adicional          texto adicional para insertar en el a-href
  *	@return	void
  */
-function print_liste_field_titre($name, $file="", $field="", $begin="", $moreparam="", $moreattrib="", $sortfield="", $sortorder="", $prefix="", $tooltip="")
+function print_liste_field_titre($name, $file="", $field="", $begin="", $moreparam="", $moreattrib="", $sortfield="", $sortorder="", $prefix="", $tooltip="", $adicional="")
 {
-	print getTitleFieldOfList($name, 0, $file, $field, $begin, $moreparam, $moreattrib, $sortfield, $sortorder, $prefix, 0, $tooltip);
+	print getTitleFieldOfList($name, 0, $file, $field, $begin, $moreparam, $moreattrib, $sortfield, $sortorder, $prefix, 0, $tooltip, $adicional);
 }
 
 /**
@@ -3576,9 +3591,10 @@ function print_liste_field_titre($name, $file="", $field="", $begin="", $morepar
  *  @param	string	$prefix		 		Prefix for css. Use space after prefix to add your own CSS tag, for example 'mycss '.
  *  @param	string	$disablesortlink	1=Disable sort link
  *  @param	string	$tooltip	 		Tooltip
+ *	@param  string  $adicional          texto adicional para insertar en el a-href
  *	@return	string
  */
-function getTitleFieldOfList($name, $thead=0, $file="", $field="", $begin="", $moreparam="", $moreattrib="", $sortfield="", $sortorder="", $prefix="", $disablesortlink=0, $tooltip='')
+function getTitleFieldOfList($name, $thead=0, $file="", $field="", $begin="", $moreparam="", $moreattrib="", $sortfield="", $sortorder="", $prefix="", $disablesortlink=0, $tooltip='', $adicional="")
 {
 	global $conf, $langs, $form;
 	//print "$name, $file, $field, $begin, $options, $moreattrib, $sortfield, $sortorder<br>\n";
@@ -3610,13 +3626,13 @@ function getTitleFieldOfList($name, $thead=0, $file="", $field="", $begin="", $m
 
 		if ($field1 != $sortfield1) // We are on another field
 		{
-			if (preg_match('/^DESC/', $sortorder)) $out.= '<a class="reposition" href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'">';
-			else $out.= '<a class="reposition" href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'">';
+			if (preg_match('/^DESC/', $sortorder)) $out.= $adicional.' <a class="reposition" href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'">';
+			else $out.= $adicional.' <a class="reposition" href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'">';
 		}
 		else                      // We are of first sorting criteria
 		{
-			if (preg_match('/^ASC/', $sortorder)) $out.= '<a class="reposition" href="'.$file.'?sortfield='.$sortfield.'&sortorder=desc&begin='.$begin.$options.'">';
-			else $out.= '<a class="reposition" href="'.$file.'?sortfield='.$sortfield.'&sortorder=asc&begin='.$begin.$options.'">';
+			if (preg_match('/^ASC/', $sortorder)) $out.= $adicional.' <a class="reposition" href="'.$file.'?sortfield='.$sortfield.'&sortorder=desc&begin='.$begin.$options.'">';
+			else $out.= $adicional.' <a class="reposition" href="'.$file.'?sortfield='.$sortfield.'&sortorder=asc&begin='.$begin.$options.'"> ';
 		}
 	}
 
@@ -3649,12 +3665,17 @@ function getTitleFieldOfList($name, $thead=0, $file="", $field="", $begin="", $m
 			if (preg_match('/^DESC/', $sortorder)) {
 				//$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'">'.img_down("A-Z",0).'</a>';
 				//$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'">'.img_up("Z-A",1).'</a>';
-				$sortimg.= '<span class="nowrap">'.img_up("Z-A",0).'</span>';
+				//$sortimg.= '<span class="nowrap">'.img_up("Z-A",0).'</span>';
+				$out.= ' <a href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'"><i class="fa fa-chevron-down" title="A-Z"></i></a>';
+				$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'"><i class="fa fa-chevron-up" title="Z-A" style="color:#fff;"></i></a>';
 			}
 			if (preg_match('/^ASC/', $sortorder)) {
 				//$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'">'.img_down("A-Z",1).'</a>';
 				//$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'">'.img_up("Z-A",0).'</a>';
-				$sortimg.= '<span class="nowrap">'.img_down("A-Z",0).'</span>';
+				//$sortimg.= '<span class="nowrap">'.img_down("A-Z",0).'</span>';
+				
+				$out.= ' <a href="'.$file.'?sortfield='.$field.'&sortorder=asc&begin='.$begin.$options.'"><i class="fa fa-chevron-down" title="A-Z" style="color:#fff;"></i></a>';
+				$out.= '<a href="'.$file.'?sortfield='.$field.'&sortorder=desc&begin='.$begin.$options.'"><i class="fa fa-chevron-up" title="Z-A"></a>';
 			}
 		}
 

@@ -446,7 +446,8 @@ function dolSavePageContent($filetpl, $object, $objectpage)
 	$tplcontent.= "// END PHP ?>\n";
 	$tplcontent.= '<html'.($shortlangcode ? ' lang="'.$shortlangcode.'"':'').'>'."\n";
 	$tplcontent.= '<head>'."\n";
-	$tplcontent.= '<title>'.dol_string_nohtmltag($objectpage->title, 0, 'UTF-8').'</title>'."\n";
+	//$tplcontent.= '<title>'.dol_string_nohtmltag($objectpage->title, 0, 'UTF-8').'</title>'."\n";
+	$tplcontent.= '<title>ERP Ingeniaweb</title>'."\n";
 	$tplcontent.= '<meta charset="UTF-8">'."\n";
 	$tplcontent.= '<meta http-equiv="content-type" content="text/html; charset=utf-8" />'."\n";
 	$tplcontent.= '<meta name="robots" content="index, follow" />'."\n";

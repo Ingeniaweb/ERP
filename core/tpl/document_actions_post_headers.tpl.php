@@ -85,6 +85,13 @@ $formfile->form_attach_new_file(
 	1,
 	$savingdocmask
 );
+//$_SESSION['projet_title']; //Contiene el titulo del proyecto, usado para luego crear la carpeta
+//echo $_SERVER["PHP_SELF"].'?id='.$object->id.(empty($withproject)?'':'&withproject=1');
+$cadena = explode("document.php", $_SERVER['REQUEST_URI']);
+$ncadena = explode("projet/", $cadena[0]);
+//echo "cad:".$ncadena[0];
+
+//$formfile->form_attach_new_folder($cadena[0]."".$_SESSION['projet_title'],"holita");
 
 $disablemove=1;
 if (in_array($modulepart, array('product', 'produit', 'societe', 'user'))) $disablemove=0;		// Drag and drop for up and down allowed on product, thirdparty, ...

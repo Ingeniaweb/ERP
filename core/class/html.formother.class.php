@@ -922,6 +922,77 @@ class FormOther
         return $out;
     }
 
+//************************************ INPUT TYPE DATE PARA LISTADOS *****************************************************
+
+/**
+     *  Return HTML combo list of years
+     *
+     *  @param  string      $selected       Preselected value (''=current year, -1=none, year otherwise)
+     *  @param  string      $selectedf       Preselected value (''=current year, -1=none, year otherwise)
+     *  @param  string      $htmlname       Name of HTML select object
+     *  @param  int         $useempty       Affiche valeur vide dans liste
+     *  @param  int         $min_year       Offset of minimum year into list (by default current year -10)
+     *  @param  int         $max_year       Offset of maximum year into list (by default current year + 5)
+     *  @param  int         $offset         Offset
+     *  @param  int         $invert         Invert
+     *  @param  string      $option         Option
+     *  @param  string      $morecss        More CSS
+     *  @return string
+     */
+    function select_date($selected='',$selectedf='',$htmlname='yearid',$useempty=0, $min_year=10, $max_year=5, $offset=0, $invert=0, $option='', $morecss='')
+    {
+        print $this->selectdate($selected,$selectedf,$htmlname,$useempty,$min_year,$max_year,$offset,$invert,$option,$morecss);
+    }
+
+    /**
+     *  Return HTML combo list of years
+     *
+     *  @param  string  $selected       Preselected value (''=current year, -1=none, year otherwise)
+     *  @param  string  $selectedf      Valor preseleccionado de fecha fin
+     *  @param  string  $htmlname       Name of HTML select object
+     *  @param  int     $useempty       Affiche valeur vide dans liste
+     *  @param  int     $min_year       Offset of minimum year into list (by default current year -10)
+     *  @param  int     $max_year       Offset of maximum year into list (by default current year + 5)
+     *  @param  int     $offset         Offset
+     *  @param  int     $invert         Invert
+     *  @param  string  $option         Option
+     *  @param  string  $morecss        More CSS
+     *  @return string
+     */
+    function selectdate($selected='',$selectedf='',$htmlname='yearid',$useempty=0, $min_year=10, $max_year=5, $offset=0, $invert=0, $option='', $morecss='')
+    {
+        $out='';
+        if($selected=='' || $selected=='-1'){
+            $selected=date('Y-m').'-01';
+        }
+        if($selectedf=='' || $selectedf=='-1'){
+            $mon = date('m');
+            $ye = date('Y');
+            $da = date("d", mktime(0,0,0, $mon+1, 0, $ye));
+            
+            $selectedf=date('Y-m').'-'.$da;
+        }
+        $currentyear = date("Y")+$offset;
+        $max_yearf = ($currentyear+$max_year)."-12-31";
+        $min_yearf =$selectedf;
+        $min_year = ($currentyear-$min_year)."-01-01";
+        $max_year=$selected;
+        $opciones="";
+
+        //$out.= '<div class="'.($morecss?' '.$morecss:'').'" style="width:auto;" id="div_' . $htmlname . '" name="div_' . $htmlname . '"></div>';
+        
+        $out.= '<span style="font-size:0.9em;color:#fff;">Desde </span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_ini" name="' . $htmlname . '_ini" '.$option.' min="'.$min_year.'" max="'.$max_year.'" value="'.$selected.'"><br>';
+
+        $out.= '<span style="font-size:0.9em;color:#fff;">Hasta &nbsp;</span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_fin" name="' . $htmlname . '_fin" '.$option.' min="'.$min_yearf.'" max="'.$max_yearf.'" value="'.$selectedf.'">';
+        
+        //$out.= '<input class="inputDate '.($morecss?' '.$morecss:'').'" id="'.$htmlname.'" name="' . $htmlname . '"'.$option.' min="'.$min_year.'" max="'.$max_year.'" value="'.$selected.'">';
+        //$out.= "</select>\n";
+
+        return $out;
+    }
+
+//************************************ FIN INPUT TYPE DATE PARA LISTADOS *****************************************************
+
     /**
      * Show form to select address
      *

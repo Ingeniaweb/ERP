@@ -35,6 +35,7 @@ global $Config;
 		<title><?php echo $langs->trans("MediaBrowser").' - '.$Config['UserFilesAbsolutePathRelative']; ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script type="text/javascript" src="js/fckxml.js"></script>
+		
 		<script type="text/javascript">
 // Automatically detect the correct document.domain (#1919).
 (function()

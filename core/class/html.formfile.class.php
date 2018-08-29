@@ -52,7 +52,19 @@ class FormFile
 		$this->numoffiles=0;
 		return 1;
 	}
-
+	/**
+	 *  Show form to upload a new folder.
+	 *
+	 *  @param  string		$url			Url
+	 *  @param  string		$title			Title zone (Title or '' or 'none')
+	 * 	@return	int							<0 if KO, >0 if OK
+	 */
+	function form_attach_new_folder($url, $title='')
+	{
+		print '<input class="button" name="sendit" value="Crear Carpeta" type="submit">';
+		//mkdir($url."/".$title, 0700);
+		echo "URL --> ".$url. " y el titulo --> ".$title;
+	}
 
 	/**
 	 *  Show form to upload a new file.

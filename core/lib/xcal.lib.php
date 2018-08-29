@@ -315,7 +315,8 @@ function build_rssfile($format,$title,$desc,$events_array,$outputfile,$filter=''
 		fwrite($fichier, $form);
 		fwrite($fichier, "\n");
 
-		$form="<channel>\n<title>".$title."</title>\n";
+		//$form="<channel>\n<title>".$title."</title>\n";
+		$form="<channel>\n<title>ERP Ingeniaweb</title>\n";
 		fwrite($fichier, $form);
 
 		$form='<description><![CDATA['.$desc.'.]]></description>'."\n".
@@ -363,7 +364,8 @@ function build_rssfile($format,$title,$desc,$events_array,$outputfile,$filter=''
  				$description=dol_string_nohtmltag($description,0);	// Remove html tags
 
 				fwrite($fichier, "<item>\n");
-				fwrite($fichier, "<title><![CDATA[".$summary."]]></title>\n");
+				//fwrite($fichier, "<title><![CDATA[".$summary."]]></title>\n");
+				fwrite($fichier, "<title>ERP Ingeniaweb</title>\n");
 				fwrite($fichier, "<link><![CDATA[".$url."]]></link>\n");
 				fwrite($fichier, "<author><![CDATA[".$author."]]></author>\n");
 				fwrite($fichier, "<category><![CDATA[".$category."]]></category>\n");

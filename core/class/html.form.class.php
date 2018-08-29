@@ -998,8 +998,74 @@ class Form
 	function select_company($selected='', $htmlname='socid', $filter='', $showempty='', $showtype=0, $forcecombo=0, $events=array(), $limit=0, $morecss='minwidth100', $moreparam='', $selected_input_value='', $hidelabel=1, $ajaxoptions=array())
 	{
 		global $conf,$user,$langs;
-
+		
+		$_SESSION['url']=DOL_URL_ROOT;
 		$out='';
+
+		$buscar = "client";
+		$resultado = strpos($filter, $buscar);		 
+
+		$out.= '<script>
+		
+			function mostrar_pagos(){
+					if( $("#select2-socid-container").attr("title") == null || $("#select2-socid-container").attr("title") == " " || $("#select2-socid-container").attr("title") == "" || $("#select2-socid-container").attr("title") == "undefined" ){
+						$("#terms_pay").hide();
+						$("#mode_pay").hide();	
+						$("#mode_ship").hide();						
+					}
+					else
+					{
+						var name_prov = $("#select2-socid-container").attr("title");';
+		if($resultado !== FALSE){ //Entra aqui si encuentra client en $filter
+		    	$out.= '
+					var json= {"cliente": name_prov};
+						$.ajax({
+						  method: "POST",
+						  url: "http://laboratorio.e-ingeniaweb.es/indago/core/class/html.ajax.select.datos.php",
+						  data: json,					
+						  datatype: "json",	
+						  success: function( data ) {
+							$("#terms_pay").show();
+							$("#mode_pay").show();	
+							$("#mode_ship").show();	
+							var resultado = $.parseJSON(data);
+
+							$("#cond_reglement_id").val(resultado["cond_pago"]);
+							$("#selectmode_reglement_id").val(resultado["forma_pago"]);
+						//  $("#selectshipping_method_id").val(resultado["envio"]);
+
+						//	console.log("Condiciones: "+resultado["cond_pago"]+" forma: "+resultado["forma_pago"]+" envio: "+resultado["envio"]);							
+						  }
+						});						
+					}
+				}
+			</script>';
+		}
+		else{ //Estamos en un proveedor
+					$out.= '
+					var json= {"proveedor": name_prov};
+						$.ajax({
+						  method: "POST",
+						  url: "http://laboratorio.e-ingeniaweb.es/indago/core/class/html.ajax.select.datos.php",
+						  data: json,					
+						  datatype: "json",	
+						  success: function( data ) {
+							$("#terms_pay").show();
+							$("#mode_pay").show();	
+							$("#mode_ship").show();	
+							var resultado = $.parseJSON(data);
+							$("#cond_reglement_id").val(resultado["cond_pago"]);
+							$("#selectmode_reglement_id").val(resultado["forma_pago"]);
+							$("#selectshipping_method_id").val(resultado["envio"]);
+
+						//	console.log("Condiciones: "+resultado["cond_pago"]+" forma: "+resultado["forma_pago"]+" envio: "+resultado["envio"]);							
+						  }
+						});						
+					}
+				}
+			</script>';			
+		}					
+
 
 		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT) && ! $forcecombo)
 		{
@@ -1035,6 +1101,7 @@ class Form
 			$out.=$this->select_thirdparty_list($selected, $htmlname, $filter, $showempty, $showtype, $forcecombo, $events, '', 0, $limit, $morecss, $moreparam);
 		}
 
+				
 		return $out;
 	}
 
@@ -1069,6 +1136,231 @@ class Form
 		$sql.= " FROM ".MAIN_DB_PREFIX ."societe as s";
 		if (!$user->rights->societe->client->voir && !$user->societe_id) $sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		$sql.= " WHERE s.entity IN (".getEntity('societe').")";
+		if (! empty($user->societe_id)) $sql.= " AND s.rowid = ".$user->societe_id;
+		if ($filter) $sql.= " AND (".$filter.")";
+		if (!$user->rights->societe->client->voir && !$user->societe_id) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
+		if (! empty($conf->global->COMPANY_HIDE_INACTIVE_IN_COMBOBOX)) $sql.= " AND s.status <> 0";
+		// Add criteria
+		if ($filterkey && $filterkey != '')
+		{
+			$sql.=" AND (";
+			$prefix=empty($conf->global->COMPANY_DONOTSEARCH_ANYWHERE)?'%':'';	// Can use index if COMPANY_DONOTSEARCH_ANYWHERE is on
+			// For natural search
+			$scrit = explode(' ', $filterkey);
+			$i=0;
+			if (count($scrit) > 1) $sql.="(";
+			foreach ($scrit as $crit) {
+				if ($i > 0) $sql.=" AND ";
+				$sql.="(s.nom LIKE '".$this->db->escape($prefix.$crit)."%')";
+				$i++;
+			}
+			if (count($scrit) > 1) $sql.=")";
+			if (! empty($conf->barcode->enabled))
+			{
+				$sql .= " OR s.barcode LIKE '".$this->db->escape($filterkey)."%'";
+			}
+			$sql.=")";
+		}
+		$sql.=$this->db->order("nom","ASC");
+		$sql.=$this->db->plimit($limit, 0);
+
+		// Build output string
+		dol_syslog(get_class($this)."::select_thirdparty_list", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+		   	if (! $forcecombo)
+			{
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
+				$out .= ajax_combobox($htmlname, $events, $conf->global->COMPANY_USE_SEARCH_TO_SELECT);
+			}
+
+			// Construct $out and $outarray
+			$out.= '<select id="'.$htmlname.'" onchange="mostrar_pagos()" class="flat'.($morecss?' '.$morecss:'').'"'.($moreparam?' '.$moreparam:'').' name="'.$htmlname.'">'."\n";
+
+			$textifempty='';
+			// Do not use textifempty = ' ' or '&nbsp;' here, or search on key will search on ' key'.
+			//if (! empty($conf->use_javascript_ajax) || $forcecombo) $textifempty='';
+			if (! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT))
+			{
+				if ($showempty && ! is_numeric($showempty)) $textifempty=$langs->trans($showempty);
+				else $textifempty.=$langs->trans("All");
+			}
+			if ($showempty) $out.= '<option value="-1">'.$textifempty.'</option>'."\n";
+
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num)
+			{
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+					$label='';
+					if ($conf->global->SOCIETE_ADD_REF_IN_LIST) {
+						if (($obj->client) && (!empty($obj->code_client))) {
+							$label = $obj->code_client. ' - ';
+						}
+						if (($obj->fournisseur) && (!empty($obj->code_fournisseur))) {
+							$label .= $obj->code_fournisseur. ' - ';
+						}
+						$label.=' '.$obj->name;
+					}
+					else
+					{
+						$label=$obj->name;
+					}
+
+					if(!empty($obj->name_alias)) {
+						$label.=' ('.$obj->name_alias.')';
+					}
+
+					if ($showtype)
+					{
+						if ($obj->client || $obj->fournisseur) $label.=' (';
+						if ($obj->client == 1 || $obj->client == 3) $label.=$langs->trans("Customer");
+						if ($obj->client == 2 || $obj->client == 3) $label.=($obj->client==3?', ':'').$langs->trans("Prospect");
+						if ($obj->fournisseur) $label.=($obj->client?', ':'').$langs->trans("Supplier");
+						if ($obj->client || $obj->fournisseur) $label.=')';
+					}
+
+					if (empty($outputmode))
+					{
+						if ($selected > 0 && $selected == $obj->rowid)
+						{
+							$out.= '<option value="'.$obj->rowid.'" selected>'.$label.'</option>';
+						}
+						else
+						{
+							$out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+						}
+					}
+					else
+					{
+						array_push($outarray, array('key'=>$obj->rowid, 'value'=>$label, 'label'=>$label));
+					}
+
+					$i++;
+					if (($i % 10) == 0) $out.="\n";
+				}
+			}
+			$out.= '</select>'."\n";
+		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+
+		$this->result=array('nbofthirdparties'=>$num);
+
+		if ($outputmode) return $outarray;
+		return $out;
+	}
+
+
+	/**
+	 *    	Return HTML combo list of absolute discounts
+	 *
+	 *    	@param	string	$selected       Id remise fixe pre-selectionnee
+	 *    	@param  string	$htmlname       Nom champ formulaire
+	 *    	@param  string	$filter         Criteres optionnels de filtre
+	 * 		@param	int		$socid			Id of thirdparty
+	 * 		@param	int		$maxvalue		Max value for lines that can be selected
+	 * 		@return	int						Return number of qualifed lines in list
+	 */
+
+/*aqui*/	
+	/**
+	 *  Output html form to select a third party
+	 *
+	 *	@param	string	$selected       		Preselected type
+	 *	@param  string	$htmlname       		Name of field in form
+	 *  @param  string	$filter         		optional filters criteras (example: 's.rowid <> x', 's.client IN (1,3)')
+	 *	@param	string	$showempty				Add an empty field (Can be '1' or text key to use on empty line like 'SelectThirdParty')
+	 * 	@param	int		$showtype				Show third party type in combolist (customer, prospect or supplier)
+	 * 	@param	int		$forcecombo				Force to load all values and output a standard combobox (with no beautification)
+	 *  @param	array	$events					Ajax event options to run on change. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *	@param	int		$limit					Maximum number of elements
+	 *  @param	string	$morecss				Add more css styles to the SELECT component
+	 *	@param  string	$moreparam      		Add more parameters onto the select tag. For example 'style="width: 95%"' to avoid select2 component to go over parent container
+	 *	@param	string	$selected_input_value	Value of preselected input text (for use with ajax)
+	 *  @param	int		$hidelabel				Hide label (0=no, 1=yes, 2=show search icon (before) and placeholder, 3 search icon after)
+	 *  @param	array	$ajaxoptions			Options for ajax_autocompleter
+	 * 	@return	string							HTML string with select box for thirdparty.
+	 */
+	function select_companyv2($selected='', $htmlname='socid', $filter='', $showempty='', $showtype=0, $forcecombo=0, $events=array(), $limit=0, $morecss='minwidth100', $moreparam='', $selected_input_value='', $hidelabel=1, $ajaxoptions=array())
+	{
+		global $conf,$user,$langs;
+
+		$out='';
+
+		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT) && ! $forcecombo)
+		{
+			// No immediate load of all database
+			$placeholder='';
+			if ($selected && empty($selected_input_value))
+			{
+				require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+				$societetmp = new Societe($this->db);
+				$societetmp->fetch($selected);
+				$selected_input_value=$societetmp->name;
+				unset($societetmp);
+			}
+			// mode 1
+			$urloption='htmlname='.$htmlname.'&outjson=1&filter='.$filter.($showtype?'&showtype='.$showtype:'');
+			$out.=  ajax_autocompleter($selected, $htmlname, DOL_URL_ROOT.'/societe/ajax/company.php', $urloption, $conf->global->COMPANY_USE_SEARCH_TO_SELECT, 0, $ajaxoptions);
+			$out.='<style type="text/css">.ui-autocomplete { z-index: 250; }</style>';
+			if (empty($hidelabel)) print $langs->trans("RefOrLabel").' : ';
+			else if ($hidelabel > 1) {
+				$placeholder=' placeholder="'.$langs->trans("RefOrLabel").'"';
+				if ($hidelabel == 2) {
+					$out.=  img_picto($langs->trans("Search"), 'search');
+				}
+			}
+			$out.= '<input type="text" class="'.$morecss.'" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->THIRDPARTY_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			if ($hidelabel == 3) {
+				$out.=  img_picto($langs->trans("Search"), 'search');
+			}
+		}
+		else
+		{
+			// Immediate load of all database
+			$out.=$this->select_thirdparty_listv2($selected, $htmlname, $filter, $showempty, $showtype, $forcecombo, $events, '', 0, $limit, $morecss, $moreparam);
+		}
+
+		return $out;
+	}
+
+	/**
+	 *  Output html form to select a third party.
+	 *  Note, you must use the select_company to get the component to select a third party. This function must only be called by select_company.
+	 *
+	 *	@param	string	$selected       Preselected type
+	 *	@param  string	$htmlname       Name of field in form
+	 *  @param  string	$filter         optional filters criteras (example: 's.rowid <> x', 's.client in (1,3)')
+	 *	@param	string	$showempty		Add an empty field (Can be '1' or text to use on empty line like 'SelectThirdParty')
+	 * 	@param	int		$showtype		Show third party type in combolist (customer, prospect or supplier)
+	 * 	@param	int		$forcecombo		Force to use standard HTML select component without beautification
+	 *  @param	array	$events			Event options. Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid', 'params'=>array('add-customer-contact'=>'disabled')))
+	 *  @param	string	$filterkey		Filter on key value
+	 *  @param	int		$outputmode		0=HTML select string, 1=Array
+	 *  @param	int		$limit			Limit number of answers
+	 *  @param	string	$morecss		Add more css styles to the SELECT component
+	 *	@param  string	$moreparam      Add more parameters onto the select tag. For example 'style="width: 95%"' to avoid select2 component to go over parent container
+	 * 	@return	string					HTML string with
+	 */
+	function select_thirdparty_listv2($selected='',$htmlname='socid',$filter='',$showempty='', $showtype=0, $forcecombo=0, $events=array(), $filterkey='', $outputmode=0, $limit=0, $morecss='minwidth100', $moreparam='')
+	{
+		global $conf,$user,$langs;
+
+		$out='';
+		$num=0;
+		$outarray=array();
+
+		// On recherche les societes
+		$sql = "SELECT s.rowid, s.nom as name, s.name_alias, s.client, s.fournisseur, s.code_client, s.code_fournisseur";
+		$sql.= " FROM ".MAIN_DB_PREFIX ."societe as s";
+		if (!$user->rights->societe->client->voir && !$user->societe_id) $sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+		$sql.= " WHERE s.code_client is not null and s.entity IN (".getEntity('societe').")";
 		if (! empty($user->societe_id)) $sql.= " AND s.rowid = ".$user->societe_id;
 		if ($filter) $sql.= " AND (".$filter.")";
 		if (!$user->rights->societe->client->voir && !$user->societe_id) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
@@ -1188,7 +1480,7 @@ class Form
 		if ($outputmode) return $outarray;
 		return $out;
 	}
-
+/*fin aqui*/
 
 	/**
 	 *    	Return HTML combo list of absolute discounts
@@ -1200,6 +1492,7 @@ class Form
 	 * 		@param	int		$maxvalue		Max value for lines that can be selected
 	 * 		@return	int						Return number of qualifed lines in list
 	 */
+
 	function select_remises($selected, $htmlname, $filter, $socid, $maxvalue=0)
 	{
 		global $langs,$conf;
@@ -1630,8 +1923,584 @@ class Form
 
 		return $out;
 	}
+	/**
+	 *	Return select list of users
+	 *
+	 *  @param	string	$selected       User id or user object of user preselected. If 0 or < -2, we use id of current user. If -1, keep unselected (if empty is allowed)
+	 *  @param  string	$htmlname       Field name in form
+	 *  @param  int		$show_empty     0=list with no empty value, 1=add also an empty value into list
+	 *  @param  array	$exclude        Array list of users id to exclude
+	 * 	@param	int		$disabled		If select list must be disabled
+	 *  @param  array|string	$include        Array list of users id to include or 'hierarchy' to have only supervised users or 'hierarchyme' to have supervised + me
+	 * 	@param	array	$enableonly		Array list of users id to be enabled. If defined, it means that others will be disabled
+	 *  @param	int		$force_entity	0 or Id of environment to force
+	 *  @param	int		$maxlength		Maximum length of string into list (0=no limit)
+	 *  @param	int		$showstatus		0=show user status only if status is disabled, 1=always show user status into label, -1=never show user status
+	 *  @param	string	$morefilter		Add more filters into sql request (Example: 'employee = 1')
+	 *  @param	integer	$show_every		0=default list, 1=add also a value "Everybody" at beginning of list
+	 *  @param	string	$enableonlytext	If option $enableonlytext is set, we use this text to explain into label why record is disabled. Not used if enableonly is empty.
+	 *  @param	string	$morecss		More css
+	 *  @param  int     $noactive       Show only active users (this will also happened whatever is this option if USER_HIDE_INACTIVE_IN_COMBOBOX is on).
+	 * 	@return	string					HTML select string
+	 *  @see select_dolgroups
+	 */
+/*	function select_all_tec($selected='', $htmlname='userid', $show_empty=0, $exclude=null, $disabled=0, $include='', $enableonly='', $force_entity=0, $maxlength=0, $showstatus=0, $morefilter='', $show_every=0, $enableonlytext='', $morecss='', $noactive=0)
+	{
+		global $conf,$user,$langs;
+
+		// If no preselected user defined, we take current user
+		if ((is_numeric($selected) && ($selected < -2 || empty($selected))) && empty($conf->global->SOCIETE_DISABLE_DEFAULT_SALESREPRESENTATIVE)) $selected=$user->id;
+
+		$excludeUsers=null;
+		$includeUsers=null;
+
+		// Permettre l'exclusion d'utilisateurs
+		if (is_array($exclude))	$excludeUsers = implode(",",$exclude);
+		// Permettre l'inclusion d'utilisateurs
+		if (is_array($include))	$includeUsers = implode(",",$include);
+		else if ($include == 'hierarchy')
+		{
+			// Build list includeUsers to have only hierarchy
+			$includeUsers = implode(",",$user->getAllChildIds(0));
+		}
+		else if ($include == 'hierarchyme')
+		{
+			// Build list includeUsers to have only hierarchy and current user
+			$includeUsers = implode(",",$user->getAllChildIds(1));
+		}
+
+		$out='';
+
+		// Forge request to select users
+		/*$sql = "SELECT DISTINCT u.rowid, u.lastname as lastname, u.firstname, u.statut, u.login, u.admin, u.entity";
+		if (! empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && ! $user->entity)
+		{
+			$sql.= ", e.label";
+		}
+		$sql.= " FROM ".MAIN_DB_PREFIX ."user as u";
+		if (! empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && ! $user->entity)
+		{
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX ."entity as e ON e.rowid=u.entity";
+			if ($force_entity) $sql.= " WHERE u.entity IN (0,".$force_entity.")";
+			else $sql.= " WHERE u.entity IS NOT NULL";
+		}
+		else
+	   {
+			if (! empty($conf->global->MULTICOMPANY_TRANSVERSE_MODE))
+			{
+				$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."usergroup_user as ug";
+				$sql.= " ON ug.fk_user = u.rowid";
+				$sql.= " WHERE ug.entity = ".$conf->entity;
+			}
+			else
+			{
+				$sql.= " WHERE u.entity IN (0,".$conf->entity.")";
+			}
+		}
+		if (! empty($user->societe_id)) $sql.= " AND u.fk_soc = ".$user->societe_id;
+		if (is_array($exclude) && $excludeUsers) $sql.= " AND u.rowid NOT IN (".$excludeUsers.")";
+		if ($includeUsers) $sql.= " AND u.rowid IN (".$includeUsers.")";
+		if (! empty($conf->global->USER_HIDE_INACTIVE_IN_COMBOBOX) || $noactive) $sql.= " AND u.statut <> 0";
+		if (! empty($morefilter)) $sql.=" ".$morefilter;
+
+		if(empty($conf->global->MAIN_FIRSTNAME_NAME_POSITION)){
+			$sql.= " ORDER BY u.firstname ASC";
+		}else{
+			$sql.= " ORDER BY u.lastname ASC";
+		}
+		
+		$sql="SELECT * FROM gelagri.llx_adherent
+			  where fk_adherent_type like 2";
+		dol_syslog(get_class($this)."::select_dolusers", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num)
+			{
+		   		// Enhance with select2
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
+				$out .= ajax_combobox($htmlname);
+
+				// do not use maxwidthonsmartphone by default. Set it by caller so auto size to 100% will work when not defined
+				$out.= '<select class="flat'.($morecss?' minwidth200 '.$morecss:' minwidth300').'" id="'.$htmlname.'" name="'.$htmlname.'"'.($disabled?' disabled':'').'>';
+				if ($show_empty) $out.= '<option value="-1"'.((empty($selected) || $selected==-1)?' selected':'').'>&nbsp;</option>'."\n";
+				if ($show_every) $out.= '<option value="-2"'.(($selected==-2)?' selected':'').'>-- '.$langs->trans("Everybody").' --</option>'."\n";
+				$out.= '<option value="0" selected>&nbsp;</option>'."\n";
+				$userstatic=new User($this->db);
+
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+
+					$userstatic->id=$obj->rowid;
+					$userstatic->lastname=$obj->lastname.", ";
+					$userstatic->firstname=$obj->firstname;
+
+					$disableline='';
+					if (is_array($enableonly) && count($enableonly) && ! in_array($obj->rowid,$enableonly)) $disableline=($enableonlytext?$enableonlytext:'1');
+
+					if ((is_object($selected) && $selected->id == $obj->rowid) || (! is_object($selected) && $selected == $obj->rowid))
+					{
+						$out.= '<option value="'.$obj->rowid.'"';
+						if ($disableline) $out.= ' disabled';
+						$out.= ' selected>';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'"';
+						if ($disableline) $out.= ' disabled';
+						$out.= '>';
+					}
+
+					$fullNameMode = 0; //Lastname + firstname
+					if(empty($conf->global->MAIN_FIRSTNAME_NAME_POSITION)){
+						$fullNameMode = 1; //firstname + lastname
+					}
+					$out.= $userstatic->getFullName($langs, $fullNameMode, -1, $maxlength);
+
+					// Complete name with more info
+					$moreinfo=0;
+					if (! empty($conf->global->MAIN_SHOW_LOGIN))
+					{
+						$out.= ($moreinfo?' - ':' (').$obj->login;
+						$moreinfo++;
+					}
+					if ($showstatus >= 0)
+					{
+						if ($obj->statut == 1 && $showstatus == 1)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans('Enabled');
+							$moreinfo++;
+						}
+						if ($obj->statut == 0)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans('Disabled');
+							$moreinfo++;
+						}
+					}
+					if (! empty($conf->multicompany->enabled) && empty($conf->global->MULTICOMPANY_TRANSVERSE_MODE) && $conf->entity == 1 && $user->admin && ! $user->entity)
+					{
+						if ($obj->admin && ! $obj->entity)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans("AllEntities");
+							$moreinfo++;
+						}
+						else
+					 {
+							$out.=($moreinfo?' - ':' (').($obj->label?$obj->label:$langs->trans("EntityNameNotDefined"));
+							$moreinfo++;
+					 	}
+					}
+					$out.=($moreinfo?')':'');
+					if ($disableline && $disableline != '1')
+					{
+						$out.=' - '.$disableline;	// This is text from $enableonlytext parameter
+					}
+					$out.= '</option>';
+
+					$i++;
+				}
+			}
+			else
+			{
+				$out.= '<select class="flat" id="'.$htmlname.'" name="'.$htmlname.'" disabled>';
+				$out.= '<option value="">'.$langs->trans("None").'</option>';
+			}
+			$out.= '</select>';
+		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		$out.='<script>
+	    	if( $("#select2-tec1-container").attr("title") == null){;	    		
+	    		$(".tecnico2").hide();
+	    		$(".tecnico3").hide();
+	    	}
+	    	if( $("#select2-tec1-container").attr("title") == null || $("#select2-tec1-container").attr("title") == " " || $("#select2-tec1-container").attr("title") == "" || $("#tec1 option").length<=2){;	    		
+	    		$(".tecnico2").hide();
+	    		$(".tecnico3").hide();
+	    	}
 
 
+	    	$("#tec1").change(function(){
+	    		if($("#select2-tec1-container").attr("title") == null || $("#select2-tec1-container").attr("title") == " " || $("#select2-tec1-container").attr("title") == ""){
+
+	    			$("#tec2").val("0");
+	    			mostrar_todost();
+	    			$(".tecnico2").hide();
+	    			$(".tecnico3").hide();
+	    		}else{
+					if($("#tec1 option").length>2){
+						  $(".tecnico2").show();
+					}else{
+		    			$(".tecnico2").hide();
+		    		}
+		    		name_tec1=$("#tec1").val();
+		    		mostrar_todost();
+
+		    		desactivat(name_tec1);
+		    		
+	    		}
+	    	});
+
+	    	
+	    	$("#tec2").change(function(){
+	    		if($("#select2-tec2-container").attr("title") == null || $("#select2-tec2-container").attr("title") == " " || $("#select2-tec2-container").attr("title") == ""){
+
+	    			$("#tec3").val("0");
+	    			mostrar_todost();
+	    			$(".tecnico3").hide();
+	    		}else{
+	    			
+	    			
+					name_tec1=document.getElementById("tec1").value;
+					name_tec2=document.getElementById("tec2").value;
+					mostrar_todost();
+					desactivat(name_tec1);
+					$(".tecnico3").show();
+					
+
+			    	if(name_tec2!="" && name_tec2!="0"){
+						desactivat(name_tec2);
+			    	}
+			    }
+	    	});
+
+			$("#tec3").change(function(){
+	    		name_tec1=$("#tec1").val();
+				name_tec2=$("#tec2").val();
+				name_tec3=$("#tec3").val();
+				mostrar_todost();
+				desactivat(name_tec1);
+				desactivat(name_tec2);
+				
+		    	
+
+		    	if(name_tec3!="" && name_tec3!="0"){
+					desactivat(name_tec3);
+		    	}
+
+
+	    	});
+
+
+			function desactivat(valor){
+				
+				var sel=["tec1","tec2","tec3"];
+				var despl=["select2-tec1-results","select2-tec2-results","select2-tec3-results"];
+				for(i=0;i<sel.length;i++){
+					var selec=document.getElementById(sel[i]).options;
+					
+						
+					for(j=0;j<selec.length;j++){
+						if (selec[j].value==valor){ 
+							selec[j].disabled=true;
+						}
+					}
+				}
+
+				for(i=0;i<despl.length;i++){
+					if(document.getElementById(despl[i])){
+						var despleg=document.getElementById(despl[i]).childNodes
+						for(j=0;j<despleg.length;j++){
+							var desglose=despleg[j].id.split("-");
+							var cuantos=desglose.length-1;
+							var vale=desglose[cuantos];
+							if(vale==valor){
+								despleg[j].setAttribute("aria-disabled", true);
+							}
+						}
+					}
+				}
+
+				
+
+			}
+	    	function mostrar_todost(){
+	    		
+	    		var sel=["tec1","tec2","tec3"];
+	    		
+	    			for(i=0;i<sel.length;i++){
+						var selec=document.getElementById(sel[i]).options;
+	    				for(j=0;j<selec.length;j++){
+							selec[j].disabled=false;
+						}
+		    			
+		    		}
+		    	
+	    	}   	  	
+   		</script>';
+		return $out;
+	}*/
+	/**
+	 *	Return select list of users
+	 *
+	 *  @param	string	$selected       User id or user object of user preselected. If 0 or < -2, we use id of current user. If -1, keep unselected (if empty is allowed)
+	 *  @param  string	$htmlname       Field name in form
+	 *  @param  int		$show_empty     0=list with no empty value, 1=add also an empty value into list
+	 *  @param  array	$exclude        Array list of users id to exclude
+	 * 	@param	int		$disabled		If select list must be disabled
+	 *  @param  array|string	$include        Array list of users id to include or 'hierarchy' to have only supervised users or 'hierarchyme' to have supervised + me
+	 * 	@param	array	$enableonly		Array list of users id to be enabled. If defined, it means that others will be disabled
+	 *  @param	int		$force_entity	0 or Id of environment to force
+	 *  @param	int		$maxlength		Maximum length of string into list (0=no limit)
+	 *  @param	int		$showstatus		0=show user status only if status is disabled, 1=always show user status into label, -1=never show user status
+	 *  @param	string	$morefilter		Add more filters into sql request (Example: 'employee = 1')
+	 *  @param	integer	$show_every		0=default list, 1=add also a value "Everybody" at beginning of list
+	 *  @param	string	$enableonlytext	If option $enableonlytext is set, we use this text to explain into label why record is disabled. Not used if enableonly is empty.
+	 *  @param	string	$morecss		More css
+	 *  @param  int     $noactive       Show only active users (this will also happened whatever is this option if USER_HIDE_INACTIVE_IN_COMBOBOX is on).
+	 * 	@return	string					HTML select string
+	 *  @see select_dolgroups
+	 */
+/*	function select_all_prog($selected='', $htmlname='userid', $show_empty=0, $exclude=null, $disabled=0, $include='', $enableonly='', $force_entity=0, $maxlength=0, $showstatus=0, $morefilter='', $show_every=0, $enableonlytext='', $morecss='', $noactive=0)
+	{
+		global $conf,$user,$langs;
+
+		// If no preselected user defined, we take current user
+		if ((is_numeric($selected) && ($selected < -2 || empty($selected))) && empty($conf->global->SOCIETE_DISABLE_DEFAULT_SALESREPRESENTATIVE)) $selected=$user->id;
+
+		$excludeUsers=null;
+		$includeUsers=null;
+
+		// Permettre l'exclusion d'utilisateurs
+		if (is_array($exclude))	$excludeUsers = implode(",",$exclude);
+		// Permettre l'inclusion d'utilisateurs
+		if (is_array($include))	$includeUsers = implode(",",$include);
+		else if ($include == 'hierarchy')
+		{
+			// Build list includeUsers to have only hierarchy
+			$includeUsers = implode(",",$user->getAllChildIds(0));
+		}
+		else if ($include == 'hierarchyme')
+		{
+			// Build list includeUsers to have only hierarchy and current user
+			$includeUsers = implode(",",$user->getAllChildIds(1));
+		}
+
+		$out='';
+
+		// Forge request to select users
+		/*$sql = "SELECT DISTINCT u.rowid, u.lastname as lastname, u.firstname, u.statut, u.login, u.admin, u.entity";
+		if (! empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && ! $user->entity)
+		{
+			$sql.= ", e.label";
+		}
+		$sql.= " FROM ".MAIN_DB_PREFIX ."user as u";
+		if (! empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && ! $user->entity)
+		{
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX ."entity as e ON e.rowid=u.entity";
+			if ($force_entity) $sql.= " WHERE u.entity IN (0,".$force_entity.")";
+			else $sql.= " WHERE u.entity IS NOT NULL";
+		}
+		else
+	   {
+			if (! empty($conf->global->MULTICOMPANY_TRANSVERSE_MODE))
+			{
+				$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."usergroup_user as ug";
+				$sql.= " ON ug.fk_user = u.rowid";
+				$sql.= " WHERE ug.entity = ".$conf->entity;
+			}
+			else
+			{
+				$sql.= " WHERE u.entity IN (0,".$conf->entity.")";
+			}
+		}
+		if (! empty($user->societe_id)) $sql.= " AND u.fk_soc = ".$user->societe_id;
+		if (is_array($exclude) && $excludeUsers) $sql.= " AND u.rowid NOT IN (".$excludeUsers.")";
+		if ($includeUsers) $sql.= " AND u.rowid IN (".$includeUsers.")";
+		if (! empty($conf->global->USER_HIDE_INACTIVE_IN_COMBOBOX) || $noactive) $sql.= " AND u.statut <> 0";
+		if (! empty($morefilter)) $sql.=" ".$morefilter;
+
+		if(empty($conf->global->MAIN_FIRSTNAME_NAME_POSITION)){
+			$sql.= " ORDER BY u.firstname ASC";
+		}else{
+			$sql.= " ORDER BY u.lastname ASC";
+		}
+		*/
+		/*
+		$sql="SELECT * FROM gelagri.llx_adherent
+			  where fk_adherent_type like 1";
+		dol_syslog(get_class($this)."::select_dolusers", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num)
+			{
+		   		// Enhance with select2
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
+				$out .= ajax_combobox($htmlname);
+
+				// do not use maxwidthonsmartphone by default. Set it by caller so auto size to 100% will work when not defined
+				$out.= '<select class="flat'.($morecss?' minwidth200 '.$morecss:' minwidth300').'" id="'.$htmlname.'" name="'.$htmlname.'"'.($disabled?' disabled':'').'>';
+				if ($show_empty) $out.= '<option value="-1"'.((empty($selected) || $selected==-1)?' selected':'').'>&nbsp;</option>'."\n";
+				if ($show_every) $out.= '<option value="-2"'.(($selected==-2)?' selected':'').'>-- '.$langs->trans("Everybody").' --</option>'."\n";
+				$out.= '<option value="0" selected> </option>';
+				$userstatic=new User($this->db);
+
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+
+					$userstatic->id=$obj->rowid;
+					$userstatic->lastname=$obj->lastname.", ";
+					$userstatic->firstname=$obj->firstname;
+
+					$disableline='';
+					if (is_array($enableonly) && count($enableonly) && ! in_array($obj->rowid,$enableonly)) $disableline=($enableonlytext?$enableonlytext:'1');
+
+					if ((is_object($selected) && $selected->id == $obj->rowid) || (! is_object($selected) && $selected == $obj->rowid))
+					{
+						$out.= '<option value="'.$obj->rowid.'"';
+						if ($disableline) $out.= ' disabled';
+						$out.= ' >';
+					}
+					else
+					{
+						$out.= '<option value="'.$obj->rowid.'"';
+						if ($disableline) $out.= ' disabled';
+						$out.= '>';
+					}
+
+					$fullNameMode = 0; //Lastname + firstname
+					if(empty($conf->global->MAIN_FIRSTNAME_NAME_POSITION)){
+						$fullNameMode = 1; //firstname + lastname
+					}
+					$out.= $userstatic->getFullName($langs, $fullNameMode, -1, $maxlength);
+
+					// Complete name with more info
+					$moreinfo=0;
+					if (! empty($conf->global->MAIN_SHOW_LOGIN))
+					{
+						$out.= ($moreinfo?' - ':' (').$obj->login;
+						$moreinfo++;
+					}
+					if ($showstatus >= 0)
+					{
+						if ($obj->statut == 1 && $showstatus == 1)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans('Enabled');
+							$moreinfo++;
+						}
+						if ($obj->statut == 0)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans('Disabled');
+							$moreinfo++;
+						}
+					}
+					if (! empty($conf->multicompany->enabled) && empty($conf->global->MULTICOMPANY_TRANSVERSE_MODE) && $conf->entity == 1 && $user->admin && ! $user->entity)
+					{
+						if ($obj->admin && ! $obj->entity)
+						{
+							$out.=($moreinfo?' - ':' (').$langs->trans("AllEntities");
+							$moreinfo++;
+						}
+						else
+					 {
+							$out.=($moreinfo?' - ':' (').($obj->label?$obj->label:$langs->trans("EntityNameNotDefined"));
+							$moreinfo++;
+					 	}
+					}
+					$out.=($moreinfo?')':'');
+					if ($disableline && $disableline != '1')
+					{
+						$out.=' - '.$disableline;	// This is text from $enableonlytext parameter
+					}
+					$out.= '</option>';
+
+					$i++;
+				}
+			}
+			else
+			{
+				$out.= '<select class="flat" id="'.$htmlname.'" name="'.$htmlname.'" disabled>';
+				$out.= '<option value="">'.$langs->trans("None").'</option>';
+			}
+			$out.= '</select>';
+		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		$out.='<script>
+
+	    	if( $("#select2-prog1-container").attr("title") == null || $("#select2-prog1-container").attr("title") == " " || $("#select2-prog1-container").attr("title") == ""){;	    		
+	    		$(".programador2").hide();
+	    		
+	    	}else if($("#prog1 option").length<=2){
+	    		$(".programador2").hide();
+
+	    	}
+	    	$("#prog1").change(function(){
+	    		if($("#select2-prog1-container").attr("title") == null || $("#select2-prog1-container").attr("title") == " " || $("#select2-prog1-container").attr("title") == ""){
+
+	    			$("#prog2").val("0");
+	    			mostrar_todosp();
+	    			$(".programador2").hide();
+	    			
+	    		}else{
+					if($("#prog1 option").length>2){
+						  $(".programador2").show();
+					}else{
+		    			$(".programador2").hide();
+		    		}
+		    		name_tec1=$("#prog1").val();
+		    		mostrar_todosp();
+		    		desactivap(name_tec1);
+
+	    		}
+	    	});
+	    	
+	    	$("#prog2").change(function(){
+	    		name_tec1=$("#prog1").val();
+				name_tec2=$("#prog2").val();
+				mostrar_todosp();
+				desactivap(name_tec1);
+		    	if(name_tec2!="" && name_tec2!="0"){
+					desactivap(name_tec2);
+		    	}
+	    	});
+
+
+			
+	    	function mostrar_todosp(){
+	    		
+	    		var sel=["prog1","prog2"];
+	    		for(i=0;i<sel.length;i++){
+
+		    		$("#"+sel[i]+" option").each(function(){
+
+		    			$("#"+sel[i]+" option[value="+this.value+"]").show();
+		    		});
+		    	}
+	    	}
+
+
+	    	function desactivap(valor){
+				
+				var sel=["prog1","prog2"];
+				var despl=["select2-prog1-results","select2-prog2-results"];
+				for(i=0;i<sel.length;i++){
+					var selec=document.getElementById(sel[i]).options;
+					
+						
+					for(j=0;j<selec.length;j++){
+						if (selec[j].value==valor){ 
+							selec[j].disabled=true;
+						}
+					}
+				}
+			}
+
+   		</script>';
+		return $out;
+
+	}*/
 	/**
 	 *	Return select list of users. Selected users are stored into session.
 	 *  List of users are provided into $_SESSION['assignedtouser'].
@@ -1830,6 +2699,7 @@ class Form
 
 									span.append(html);
 									jQuery('div#attributes_box').append(span);
+
 								});
 							})
 						});
@@ -2172,7 +3042,10 @@ class Form
 		$outdurationvalue=$outtype == Product::TYPE_SERVICE?substr($objp->duration,0,dol_strlen($objp->duration)-1):'';
 		$outdurationunit=$outtype == Product::TYPE_SERVICE?substr($objp->duration,-1):'';
 
-		$opt = '<option value="'.$objp->rowid.'"';
+
+		// añado a la opción el precio del producto para ponerlo al elegirlo
+
+		$opt = '<option value="'.$objp->rowid.'" data-price="'.round($objp->price,2).'" ';
 		$opt.= ($objp->rowid == $selected)?' selected':'';
 		if (!empty($objp->price_by_qty_rowid) && $objp->price_by_qty_rowid > 0)
 		{
@@ -2415,9 +3288,10 @@ class Form
 		$sql.= " pfp.supplier_reputation";
 		$sql.= " FROM ".MAIN_DB_PREFIX."product as p";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_fournisseur_price as pfp ON p.rowid = pfp.fk_product";
-		if ($socid) $sql.= " AND pfp.fk_soc = ".$socid;
+		
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON pfp.fk_soc = s.rowid";
 		$sql.= " WHERE p.entity IN (".getEntity('product').")";
+		if ($socid) $sql.= " AND pfp.fk_soc = ".$socid;
 		$sql.= " AND p.tobuy = 1";
 		if (strval($filtertype) != '') $sql.=" AND p.fk_product_type=".$this->db->escape($filtertype);
 		if (! empty($filtre)) $sql.=" ".$filtre;
@@ -2442,7 +3316,7 @@ class Form
 		}
 		$sql.= " ORDER BY pfp.ref_fourn DESC, pfp.quantity ASC";
 		$sql.= $db->plimit($limit, 0);
-
+		
 		// Build output string
 
 		dol_syslog(get_class($this)."::select_produits_fournisseurs_list", LOG_DEBUG);
@@ -3058,22 +3932,21 @@ class Form
 		dol_syslog(__METHOD__." selected=".$selected.", htmlname=".$htmlname, LOG_DEBUG);
 
 		$this->load_cache_conditions_paiements();
-
-		// Set default value if not already set by caller
 		if (empty($selected) && ! empty($conf->global->MAIN_DEFAULT_PAYMENT_TERM_ID)) $selected = $conf->global->MAIN_DEFAULT_PAYMENT_TERM_ID;
 
 		print '<select id="'.$htmlname.'" class="flat selectpaymentterms'.($morecss?' '.$morecss:'').'" name="'.$htmlname.'">';
+		
+
 		if ($addempty) print '<option value="0">&nbsp;</option>';
 		foreach($this->cache_conditions_paiements as $id => $arrayconditions)
 		{
-			if ($selected == $id)
-			{
-				print '<option value="'.$id.'" selected>';
+			if($id == $selected){
+				print '<option selected value="'.$id.'">';
 			}
-			else
-			{
+			else{
 				print '<option value="'.$id.'">';
 			}
+			
 			print $arrayconditions['label'];
 			print '</option>';
 		}
@@ -3108,11 +3981,14 @@ class Form
 		elseif ($filtertype != '' && $filtertype != '-1') $filterarray=explode(',',$filtertype);
 
 		$this->load_cache_types_paiements();
-
+		
 		print '<select id="select'.$htmlname.'" class="flat selectpaymenttypes'.($morecss?' '.$morecss:'').'" name="'.$htmlname.'">';
 		if ($empty) print '<option value="">&nbsp;</option>';
 		foreach($this->cache_types_paiements as $id => $arraytypes)
 		{
+			if($id == $selected){
+				print '<option selected value="'.$id.'"';
+			}
 			// If not good status
 			if ($active >= 0 && $arraytypes['active'] != $active) continue;
 
@@ -4884,7 +5760,9 @@ class Form
 						$retstring.="</script>";
 					}
 
-					// Zone de saisie manuelle de la date
+					// Modificado para que se use la fecha actual por default
+					$date = date('d/m/Y');
+					$formated_date=$date;
 					$retstring.='<input id="'.$prefix.'" name="'.$prefix.'" type="text" class="maxwidth75" maxlength="11" value="'.$formated_date.'"';
 					$retstring.=($disabled?' disabled':'');
 					$retstring.=' onChange="dpChangeDay(\''.$prefix.'\',\''.$langs->trans("FormatDateShortJavaInput").'\'); "';  // FormatDateShortInput for dol_print_date / FormatDateShortJavaInput that is same for javascript
@@ -4907,7 +5785,12 @@ class Form
 					{
 						$retstring.='<button id="'.$prefix.'Button" type="button" class="dpInvisibleButtons">'.img_object($langs->trans("Disabled"),'calendarday','class="datecallink"').'</button>';
 					}
-
+					
+					$fecha = explode("/", $formated_date);
+					$sday = $fecha[0];
+					$smonth = $fecha[1];
+					$syear = $fecha[2];
+					
 					$retstring.='<input type="hidden" id="'.$prefix.'day"   name="'.$prefix.'day"   value="'.$sday.'">'."\n";
 					$retstring.='<input type="hidden" id="'.$prefix.'month" name="'.$prefix.'month" value="'.$smonth.'">'."\n";
 					$retstring.='<input type="hidden" id="'.$prefix.'year"  name="'.$prefix.'year"  value="'.$syear.'">'."\n";

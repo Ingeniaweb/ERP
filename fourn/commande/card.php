@@ -1490,7 +1490,7 @@ if ($action=='create')
 			});
 			</script>';
 		}
-		print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&client=0&fournisseur=1&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
+		print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&client=0&fournisseur=1&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("Crear Nuevo").'</a>';
 	}
 	print '</td>';
 
@@ -1561,7 +1561,7 @@ if ($action=='create')
 		print $form->selectMultiCurrency($currency_code, 'multicurrency_code');
 		print '</td></tr>';
 	}
-
+/*
 	print '<tr><td>'.$langs->trans('NotePublic').'</td>';
 	print '<td>';
 	$doleditor = new DolEditor('note_public', isset($note_public) ? $note_public : GETPOST('note_public','none'), '', 80, 'dolibarr_notes', 'In', 0, false, true, ROWS_3, '90%');
@@ -1577,7 +1577,7 @@ if ($action=='create')
 	print '</td>';
 	//print '<td><textarea name="note_private" wrap="soft" cols="60" rows="'.ROWS_5.'"></textarea></td>';
 	print '</tr>';
-
+*/
 	if (! empty($origin) && ! empty($originid) && is_object($objectsrc)) {
 
 		print "\n<!-- " . $classname . " info -->";
@@ -1847,7 +1847,7 @@ elseif (! empty($object->id))
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 
-	print '<div class="fichecenter">';
+	print '<div class="fichecenter"  style="margin-top:100px;">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
 
@@ -2151,8 +2151,7 @@ elseif (! empty($object->id))
 
 	// Show object lines
 	$inputalsopricewithtax=0;
-	if (! empty($object->lines))
-		$ret = $object->printObjectLines($action, $societe, $mysoc, $lineid, 1);
+	
 
 	$num = count($object->lines);
 
@@ -2170,6 +2169,16 @@ elseif (! empty($object->id))
 			$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 		}
 	}
+
+
+	if (! empty($object->lines))
+	$ret = $object->printObjectLines($action, $societe, $mysoc, $lineid, 1);
+
+
+
+
+
+
 	print '</table>';
 	print '</div>';
 	print '</form>';
@@ -2378,13 +2387,20 @@ elseif (! empty($object->id))
 				{
 					print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&amp;socid='.$object->socid.'&amp;action=clone&amp;object=order">'.$langs->trans("ToClone").'</a>';
 				}
-
+				// Rechazar
+				if ($object->statut == 2)
+				{
+					if ($user->rights->fournisseur->commande->commander)
+					{
+						print '<a class="butAction"	href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=refuse">'.$langs->trans("RefuseOrder").'</a>';
+					}
+				}
 				// Cancel
 				if ($object->statut == 2)
 				{
 					if ($user->rights->fournisseur->commande->commander)
 					{
-						print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=cancel">'.$langs->trans("CancelOrder").'</a>';
+						print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=cancel">'.$langs->trans("Devolver Pedido").'</a>';
 					}
 				}
 
@@ -2434,7 +2450,7 @@ elseif (! empty($object->id))
 
 		if ($action != 'makeorder')
 		{
-			print '<div class="fichecenter"><div class="fichehalfleft">';
+			print '<div class="fichecenter" style="margin-top:100px;"><div class="fichehalfleft">';
 
 			/*
     		 * Documents generes
@@ -2726,3 +2742,24 @@ elseif (! empty($object->id))
 llxFooter();
 
 $db->close();
+//popup para productos
+?>
+<script type='text/javascript' src='../../funciones.js'></script>
+
+
+<div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);">
+            
+    <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
+    <div style="width:60%; height:90%; margin-left:20%; ">
+
+
+        <iframe id="fra_new_product" src='../../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>
+
+
+    </div>
+    
+
+</div>
+<script>
+    document.getElementById('nuevo_producto').style.display='none';
+</script>

@@ -43,7 +43,7 @@ $codelang=GETPOST('lang', 'aZ09');
 print "
 <html>
 <head>
-<title>Dolibarr frame for external web site</title>
+<title>Marco para sitio web externo</title>
 </head>
 
 <frameset ".(empty($conf->global->MAIN_MENU_INVERT)?"rows":"cols")."=\"".$heightforframes.",*\" border=0 framespacing=0 frameborder=0>

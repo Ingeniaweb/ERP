@@ -86,6 +86,15 @@ $optioncss = GETPOST('optioncss','alpha');
 $search_billed = GETPOST('search_billed','int');
 $search_project_ref=GETPOST('search_project_ref','alpha');
 
+//fecha factura =checbox para filtrar o no por la fecha de la factura
+$fecha_factura=GETPOST('fecha_factura','alpha');
+$search_date_ini=GETPOST('search_date_ini','alpha');
+$search_date_fin=GETPOST('search_date_fin','alpha');
+//fecha vencimiento=checbox para filtrar o no por la fecha de vencimiento
+$fecha_vencimiento=GETPOST('fecha_vencimiento','alpha');
+$search_date_lim_ini=GETPOST('search_date_lim_ini','alpha');
+$search_date_lim_fin=GETPOST('search_date_lim_fin','alpha');
+
 $status=GETPOST('statut','alpha');
 $viewstatut=GETPOST('viewstatut');
 
@@ -136,7 +145,7 @@ $arrayfields=array(
 	'cf.ref_supplier'=>array('label'=>$langs->trans("RefOrderSupplierShort"), 'checked'=>1, 'enabled'=>1),
 	'p.project_ref'=>array('label'=>$langs->trans("ProjectRef"), 'checked'=>0, 'enabled'=>1),
 	'u.login'=>array('label'=>$langs->trans("AuthorRequest"), 'checked'=>1),
-	's.nom'=>array('label'=>$langs->trans("ThirdParty"), 'checked'=>1),
+	's.nom'=>array('label'=>$langs->trans("Proveedor"), 'checked'=>1),
 	's.town'=>array('label'=>$langs->trans("Town"), 'checked'=>1),
 	's.zip'=>array('label'=>$langs->trans("Zip"), 'checked'=>1),
 	'state.nom'=>array('label'=>$langs->trans("StateShort"), 'checked'=>0),
@@ -210,6 +219,12 @@ if (empty($reshook))
 		$billed='';
 		$search_billed='';
 		$toselect='';
+		$fecha_factura='';
+		$search_date_ini='';
+		$search_date_fin='';
+		$fecha_vencimiento='';
+		$search_date_lim_ini='';
+		$search_date_lim_fin='';		
 		$search_array_options=array();
 	}
 	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
@@ -480,7 +495,7 @@ if ($search_billed > 0) $title.=' - '.$langs->trans("Billed");
 //$help_url="EN:Module_Customers_Orders|FR:Module_Commandes_Clients|ES:Módulo_Pedidos_de_clientes";
 $help_url='';
 llxHeader('',$title,$help_url);
-
+print '<script type="text/javascript" src="../../funciones.js"></script>';
 $sql = 'SELECT';
 if ($sall || $search_product_category > 0) $sql = 'SELECT DISTINCT';
 $sql.= ' s.rowid as socid, s.nom as name, s.town, s.zip, s.fk_pays, s.client, s.code_client,';
@@ -559,6 +574,20 @@ else if ($search_deliveryyear > 0)
 {
 	$sql.= " AND cf.date_livraison BETWEEN '".$db->idate(dol_get_first_day($search_deliveryyear,1,false))."' AND '".$db->idate(dol_get_last_day($search_deliveryyear,12,false))."'";
 }
+
+// fechas de inicio y fin para fecha de factura y fecha límite de factura
+if($search_date_ini >0 && $fecha_factura=='checked'){
+
+	$sql.= " AND cf.date_commande >= '".$search_date_ini."' AND cf.date_commande <='".$search_date_fin."'";
+}
+
+if($search_date_lim_ini >0 && $fecha_vencimiento=='checked'){
+
+	$sql.= " AND  cf.date_livraison >= '".$search_date_lim_ini."' AND  cf.date_livraison <='".$search_date_lim_fin."'";
+}
+
+
+
 if ($search_town)  $sql.= natural_search('s.town', $search_town);
 if ($search_zip)   $sql.= natural_search("s.zip",$search_zip);
 if ($search_state) $sql.= natural_search("state.nom",$search_state);
@@ -631,6 +660,13 @@ if ($resql)
 	if ($search_billed != '')   $param.="&search_billed=".$search_billed;
 	if ($show_files)            $param.='&show_files=' .$show_files;
 	if ($optioncss != '')       $param.='&optioncss='.$optioncss;
+	if ($fecha_factura)		 $param.='&fecha_factura=' .urlencode($fecha_factura);
+	if ($search_date_ini)	 $param.='&search_date_ini=' .urlencode($search_date_ini);
+	if ($search_date_fin)	 $param.='&search_date_fin=' .urlencode($search_date_fin);
+	if ($fecha_vencimiento)	 $param.='&fecha_vencimiento=' .urlencode($fecha_vencimiento);
+	if ($search_date_lim_ini)	 $param.='&search_date_lim_ini=' .urlencode($search_date_lim_ini);
+	if ($search_date_lim_fin)	 $param.='&search_date_lim_fin=' .urlencode($search_date_lim_fin);	
+
 	// Add $param from extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
@@ -746,7 +782,7 @@ if ($resql)
 
 	if (! empty($moreforfilter))
 	{
-		print '<div class="liste_titre liste_titre_bydiv centpercent">';
+		print '<div class="liste_titre liste_titre_bydiv centpercent" style="display: none;">';
 		print $moreforfilter;
 		print '</div>';
 	}
@@ -754,7 +790,7 @@ if ($resql)
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
-
+	print '<style>input{padding: 1px !important;</style>';
 	print '<div class="div-table-responsive">';
 	print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 
@@ -814,19 +850,22 @@ if ($resql)
 	// Date order
 	if (! empty($arrayfields['cf.date_commande']['checked']))
 	{
-		print '<td class="liste_titre" align="center">';
-		if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_orderday" value="'.$search_orderday.'">';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="search_ordermonth" value="'.$search_ordermonth.'">';
-		$formother->select_year($search_orderyear?$search_orderyear:-1,'search_orderyear',1, 20, 5);
+		print '<td class="liste_titre nowraponall" align="center">';
+		//if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_day" value="'.dol_escape_htmltag($search_day).'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="search_month" value="'.dol_escape_htmltag($search_month).'">';
+		//$formother->select_year($search_year?$search_year:-1,'search_year',1, 20, 5, 0, 0, '', 'width75');
+		$formother->select_date($search_date_ini?$search_date_ini:-1,$search_date_fin?$search_date_fin:-1,'search_date',1, 20, 5, 0, 0, '', 'width75');
 		print '</td>';
 	}
 	// Date delivery
 	if (! empty($arrayfields['cf.date_delivery']['checked']))
 	{
-		print '<td class="liste_titre" align="center">';
-		if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_deliveryday" value="'.$search_deliveryday.'">';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="search_deliverymonth" value="'.$search_deliverymonth.'">';
-		$formother->select_year($search_deliveryyear?$search_deliveryyear:-1,'search_deliveryyear',1, 20, 5);
+		print '<td class="liste_titre nowraponall" align="center">';
+		//if (! empty($conf->global->MAIN_LIST_FILTER_ON_DAY)) print '<input class="flat" type="text" size="1" maxlength="2" name="search_day_lim" value="'.dol_escape_htmltag($search_day_lim).'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="search_month_lim" value="'.dol_escape_htmltag($search_month_lim).'">';
+		//$formother->select_year($search_year_lim?$search_year_lim:-1,'search_year_lim',1, 20, 5, 0, 0, '', 'width75');
+		$formother->select_date($search_date_lim_ini?$search_date_lim_ini:-1,$search_date_lim_fin?$search_date_lim_fin:-1,'search_date_lim',1, 20, 5, 0, 0, '', 'width75');
+		//print '<br><input type="checkbox" name="option" value="late"'.($option == 'late'?' checked':'').' style="float:left; margin-left:25px;"><span style="color:#fff; float:left;" >&nbsp;&nbsp; '.$langs->trans("Late")."</span>";
 		print '</td>';
 	}
 	if (! empty($arrayfields['cf.total_ht']['checked']))
@@ -903,8 +942,18 @@ if ($resql)
 	if (! empty($arrayfields['country.code_iso']['checked']))  print_liste_field_titre($arrayfields['country.code_iso']['label'],$_SERVER["PHP_SELF"],"country.code_iso","",$param,'align="center"',$sortfield,$sortorder);
 	if (! empty($arrayfields['typent.code']['checked']))       print_liste_field_titre($arrayfields['typent.code']['label'],$_SERVER["PHP_SELF"],"typent.code","",$param,'align="center"',$sortfield,$sortorder);
 	if (! empty($arrayfields['cf.fk_author']['checked']))      print_liste_field_titre($arrayfields['cf.fk_author']['label'],$_SERVER["PHP_SELF"],"cf.fk_author","",$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['cf.date_commande']['checked']))  print_liste_field_titre($arrayfields['cf.date_commande']['label'],$_SERVER["PHP_SELF"],"cf.date_commande","",$param,'align="center"',$sortfield,$sortorder);
-	if (! empty($arrayfields['cf.date_delivery']['checked']))  print_liste_field_titre($arrayfields['cf.date_delivery']['label'],$_SERVER["PHP_SELF"],'cf.date_livraison','',$param, 'align="center"',$sortfield,$sortorder);
+	if (! empty($arrayfields['cf.date_commande']['checked'])){  
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=cf.date_commande&sortorder=".$sortorder."&begin='";
+
+		$adicional='<input type="checkbox"  class="reposition"  id="fecha_factura" name="fecha_factura" value="checked" '.$fecha_factura.' title="Señalar para filtrar por la fecha de factura" onclick="actualizar('.$enlace.')"> ';
+		print_liste_field_titre($arrayfields['cf.date_commande']['label'],$_SERVER["PHP_SELF"],"cf.date_commande","",$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	}
+	if (! empty($arrayfields['cf.date_delivery']['checked'])){  
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=cf.date_livraison&sortorder=".$sortorder."&begin='";
+
+		$adicional= '<input type="checkbox"  class="reposition"  id="fecha_vencimiento" name="fecha_vencimiento" value="checked" '.$fecha_vencimiento.'  title="Señalar para filtrar por la fecha de vencimiento" onclick="actualizar('.$enlace.') "> ';
+		print_liste_field_titre($arrayfields['cf.date_delivery']['label'],$_SERVER["PHP_SELF"],'cf.date_livraison','',$param, 'align="center"',$sortfield,$sortorder,'','',$adicional);
+	}
 	if (! empty($arrayfields['cf.total_ht']['checked']))       print_liste_field_titre($arrayfields['cf.total_ht']['label'],$_SERVER["PHP_SELF"],"cf.total_ht","",$param,'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['cf.total_vat']['checked']))      print_liste_field_titre($arrayfields['cf.total_vat']['label'],$_SERVER["PHP_SELF"],"cf.tva","",$param,'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['cf.total_ttc']['checked']))      print_liste_field_titre($arrayfields['cf.total_ttc']['label'],$_SERVER["PHP_SELF"],"cf.total_ttc","",$param,'align="right"',$sortfield,$sortorder);
@@ -1202,3 +1251,41 @@ else
 
 llxFooter();
 $db->close();
+
+
+?>
+
+<script>
+	window.onload=function(){
+		if(document.getElementById('search_date_ini')){
+			if(document.getElementById('fecha_factura').checked){
+				document.getElementById('search_date_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_fin')});
+				document.getElementById('search_date_fin').addEventListener('change',function(){capar_fechas('search_date_ini',this.id)});
+			}
+		}
+		if(document.getElementById('search_date_lim_ini')){
+			if(document.getElementById('fecha_vencimiento').checked){
+				document.getElementById('search_date_lim_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_lim_fin')});
+				document.getElementById('search_date_lim_fin').addEventListener('change',function(){capar_fechas('search_date_lim_ini',this.id)});	
+			}
+		}
+	}
+
+	function actualizar(enlace){
+		var ffa="&fecha_factura=";
+		var fve="&fecha_vencimiento=";
+		var ffai="&search_date_ini="+document.getElementById('search_date_ini').value;
+		var ffaf="&search_date_fin="+document.getElementById('search_date_fin').value;
+		var fvei="&search_date_lim_ini="+document.getElementById('search_date_lim_ini').value;
+		var fvef="&search_date_lim_fin="+document.getElementById('search_date_lim_fin').value;
+
+		if(document.getElementById('fecha_factura').checked) {
+			ffa=ffa+'checked';
+		}
+		if(document.getElementById('fecha_vencimiento').checked){
+			fve=fve+'checked';
+		}
+		enlace=enlace+ffa+fve+ffai+ffaf+fvei+fvef;
+		window.location.href=enlace;
+	}
+</script>
