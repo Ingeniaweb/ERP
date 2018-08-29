@@ -167,9 +167,9 @@ if ($result)
 	print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_label" value="'.$search_label.'"></td>';
 	print '<td class="liste_titre"></td>';
 	print '<td class="liste_titre" colspan="1" align="center">';
-	print '<input class="flat" type="text" size="1" maxlength="2" name="month" value="'.$month.'">';
+	//print '<input class="flat" type="text" size="1" maxlength="2" name="month" value="'.$month.'">';
 	$syear = $year;
-	$formother->select_year($syear?$syear:-1,'year',1, 20, 5);
+	//$formother->select_year($syear?$syear:-1,'year',1, 20, 5);
 	print '</td>';
 	// Type
 	print '<td class="liste_titre" align="left">';

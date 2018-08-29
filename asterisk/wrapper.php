@@ -47,7 +47,7 @@ function llxHeader()
 {
     print '<html>'."\n";
     print '<head>'."\n";
-    print '<title>Asterisk redirection from Dolibarr...</title>'."\n";
+    print '<title>Redirección ERP...</title>'."\n";
     print '</head>'."\n";
 }
 /**

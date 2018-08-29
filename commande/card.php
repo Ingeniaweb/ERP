@@ -1583,12 +1583,12 @@ if ($action == 'create' && $user->rights->commande->creer)
 	print "</td></tr>";
 
 	// Conditions de reglement
-	print '<tr><td class="nowrap">' . $langs->trans('PaymentConditionsShort') . '</td><td>';
+	print '<tr ><td  class="nowrap">' . $langs->trans('PaymentConditionsShort') . '</td><td>';
 	$form->select_conditions_paiements($cond_reglement_id, 'cond_reglement_id', - 1, 1);
 	print '</td></tr>';
 
 	// Mode de reglement
-	print '<tr><td>' . $langs->trans('PaymentMode') . '</td><td>';
+	print '<tr ><td>' . $langs->trans('PaymentMode') . '</td><td>';
 	$form->select_types_paiements($mode_reglement_id, 'mode_reglement_id');
 	print '</td></tr>';
 
@@ -1607,7 +1607,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 
 	// Shipping Method
 	if (! empty($conf->expedition->enabled)) {
-		print '<tr><td>' . $langs->trans('SendingMethod') . '</td><td>';
+		print '<tr ><td>' . $langs->trans('SendingMethod') . '</td><td>';
 		print $form->selectShippingMethod($shipping_method_id, 'shipping_method_id', '', 1);
 		print '</td></tr>';
 	}
@@ -1620,12 +1620,12 @@ if ($action == 'create' && $user->rights->commande->creer)
 		print $formproduct->selectWarehouses($warehouse_id, 'warehouse_id', '', 1);
 		print '</td></tr>';
 	}
-
+/*
 	// What trigger creation
 	print '<tr><td>' . $langs->trans('Channel') . '</td><td>';
 	$form->selectInputReason($demand_reason_id, 'demand_reason_id', '', 1);
 	print '</td></tr>';
-
+*/
 	// TODO How record was recorded OrderMode (llx_c_input_method)
 
 	// Project
@@ -1664,7 +1664,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields, 'edit');
 	}
-
+/*
 	// Template to use by default
 	print '<tr><td>' . $langs->trans('DefaultModel') . '</td>';
 	print '<td>';
@@ -1672,7 +1672,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 	$liste = ModelePDFCommandes::liste_modeles($db);
 	print $form->selectarray('model', $liste, $conf->global->COMMANDE_ADDON_PDF);
 	print "</td></tr>";
-
+*/
 	// Multicurrency
 	if (! empty($conf->multicurrency->enabled))
 	{
@@ -1682,7 +1682,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 		print $form->selectMultiCurrency($currency_code, 'multicurrency_code');
 		print '</td></tr>';
 	}
-
+/*
 	// Note public
 	print '<tr>';
 	print '<td class="tdtop">' . $langs->trans('NotePublic') . '</td>';
@@ -1704,7 +1704,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 		// print '<textarea name="note" wrap="soft" cols="70" rows="'.ROWS_3.'">'.$note_private.'</textarea>';
 		print '</td></tr>';
 	}
-
+*/
 	if (! empty($origin) && ! empty($originid) && is_object($objectsrc))
 	{
 		// TODO for compatibility
@@ -2016,7 +2016,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 		dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 
-		print '<div class="fichecenter">';
+		print '<div class="fichecenter" style="margin-top:100px;">';
 		print '<div class="fichehalfleft">';
 		print '<div class="underbanner clearboth"></div>';
 
@@ -2455,9 +2455,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 		print '<div class="div-table-responsive-no-min">';
 		print '<table id="tablelines" class="noborder noshadow" width="100%">';
 
-		// Show object lines
-		if (! empty($object->lines))
-			$ret = $object->printObjectLines($action, $mysoc, $soc, $lineid, 1);
+		
 
 		$numlines = count($object->lines);
 
@@ -2475,6 +2473,13 @@ if ($action == 'create' && $user->rights->commande->creer)
 				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 			}
 		}
+
+		// Show object lines
+		if (! empty($object->lines))
+			$ret = $object->printObjectLines($action, $mysoc, $soc, $lineid, 1);
+
+
+
 		print '</table>';
 		print '</div>';
 
@@ -2619,7 +2624,7 @@ if ($action == 'create' && $user->rights->commande->creer)
 
 		if ($action != 'presend')
 		{
-			print '<div class="fichecenter"><div class="fichehalfleft">';
+			print '<div class="fichecenter" style="margin-top:100px;"><div class="fichehalfleft">';
 			print '<a name="builddoc"></a>'; // ancre
 			// Documents
 			$comref = dol_sanitizeFileName($object->ref);
@@ -2675,3 +2680,26 @@ if ($action == 'create' && $user->rights->commande->creer)
 
 llxFooter();
 $db->close();
+
+// popup para productos
+?>
+
+<script type='text/javascript' src='../funciones.js'></script>
+
+
+<div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);">
+            
+    <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
+    <div style="width:60%; height:90%; margin-left:20%; ">
+
+
+        <iframe id="fra_new_product" src='../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>
+
+
+    </div>
+    
+
+</div>
+<script>
+    document.getElementById('nuevo_producto').style.display='none';
+</script>

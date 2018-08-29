@@ -247,7 +247,11 @@ print '<div class="fichecenter"><div class="fichethirdleft">';
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre"><td class="liste_titre" colspan="2">'.$langs->trans("Filter").'</td></tr>';
 	// Company
-	print '<tr><td>'.$langs->trans("ThirdParty").'</td><td>';
+
+	$tipo="Customer";
+	if($mode=='supplier') $tipo='Supplier';
+//"ThirdParty"
+	print '<tr><td>'.$langs->trans($tipo).'</td><td>';
 	if ($mode == 'customer') $filter='s.client in (1,2,3)';
 	if ($mode == 'supplier') $filter='s.fournisseur = 1';
 	print $form->selectarray('socid', $companies, $socid, 1, 0, 0, 'style="width: 95%"', 0, 0, 0, '', '', 1);

@@ -72,6 +72,12 @@ $search_montant_vat=GETPOST('search_montant_vat');
 $search_montant_ttc=GETPOST('search_montant_ttc');
 $search_payment_mode=GETPOST('search_payment_mode');
 $search_payment_term=GETPOST('search_payment_term');
+//añadidas fecha inicio y fin
+$search_date_ini=GETPOST('search_date_ini');
+$search_date_fin=GETPOST('search_date_fin');
+$search_date_lim_ini=GETPOST('search_date_ini');
+$search_date_lim_fin=GETPOST('search_date_fin');
+//****************************
 $search_day=GETPOST('search_day','int');
 $search_year=GETPOST('search_year','int');
 $search_month=GETPOST('search_month','int');
@@ -172,6 +178,11 @@ if (empty($reshook))
 		$search_montant_ttc='';
 		$search_payment_mode='';
 		$search_payment_term='';
+		//añadidas fechas inicio y fin
+		$search_date_ini='';
+		$search_date_fin='';
+		$search_date_lim_ini='';
+		$search_date_lim_fin='';
 		$search_day='';
 		$search_year='';
 		$search_month='';

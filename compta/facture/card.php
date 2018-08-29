@@ -64,6 +64,10 @@ if (! empty($conf->accounting->enabled)) {
 	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
 }
 
+// enlace con datepicker para fechas
+
+
+
 $langs->loadLangs(array('bills','companies','compta','products','banks','main','withdrawals'));
 if (! empty($conf->incoterm->enabled)) $langs->load('incoterm');
 if (! empty($conf->margin->enabled)) $langs->load('margins');
@@ -2697,14 +2701,14 @@ if ($action == 'create')
 		}
 	}
 
-	// Template invoice
+	/*// Template invoice
 	print '<div class="tagtr listofinvoicetype"><div class="tagtd listofinvoicetype">';
 	$tmp='<input type="radio" name="type" id="radio_template" value="0" disabled> ';
 	$text = $tmp.$langs->trans("RepeatableInvoice") . ' ';
 	//$text.= '('.$langs->trans("YouMustCreateStandardInvoiceFirst").') ';
 	$desc = $form->textwithpicto($text, $langs->transnoentities("YouMustCreateStandardInvoiceFirstDesc"), 1, 'help', '', 0, 3);
 	print $desc;
-	print '</div></div>';
+	print '</div></div>';*/
 
 	print '</div>';
 
@@ -2799,7 +2803,7 @@ if ($action == 'create')
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields, 'edit');
 	}
-
+/*
 	// Template to use by default
 	print '<tr><td>' . $langs->trans('Model') . '</td>';
 	print '<td colspan="2">';
@@ -2807,7 +2811,7 @@ if ($action == 'create')
 	$liste = ModelePDFFactures::liste_modeles($db);
 	print $form->selectarray('model', $liste, $conf->global->FACTURE_ADDON_PDF);
 	print "</td></tr>";
-
+*/
 	// Multicurrency
 	if (! empty($conf->multicurrency->enabled))
 	{
@@ -2845,7 +2849,7 @@ if ($action == 'create')
 		}
 		$htmltext.='</i>';
 	}
-
+/*
 	// Public note
 	print '<tr>';
 	print '<td class="tdtop">';
@@ -2868,7 +2872,7 @@ if ($action == 'create')
 		// print '<textarea name="note_private" wrap="soft" cols="70" rows="'.ROWS_3.'">'.$note_private.'.</textarea>
 		print '</td></tr>';
 	}
-
+*/
 	// Lines from source
 	if (! empty($origin) && ! empty($originid) && is_object($objectsrc))
 	{
@@ -3327,7 +3331,7 @@ else if ($id > 0 || ! empty($ref))
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'facnumber', 'ref', $morehtmlref, '', 0, '', '');
 
-	print '<div class="fichecenter">';
+	print '<div class="fichecenter" style="margin-top:100px;">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
 
@@ -4240,9 +4244,7 @@ else if ($id > 0 || ! empty($ref))
 	print '<div class="div-table-responsive-no-min">';
 	print '<table id="tablelines" class="noborder noshadow" width="100%">';
 
-	// Show object lines
-	if (! empty($object->lines))
-		$ret = $object->printObjectLines($action, $mysoc, $soc, $lineid, 1);
+	
 
 	// Form to add new line
 	if ($object->statut == 0 && $user->rights->facture->creer && $action != 'valid' && $action != 'editline' && ($object->is_first() || !$object->situation_cycle_ref))
@@ -4256,6 +4258,12 @@ else if ($id > 0 || ! empty($ref))
 			$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 		}
 	}
+
+
+	// Show object lines
+	if (! empty($object->lines))
+		$ret = $object->printObjectLines($action, $mysoc, $soc, $lineid, 1);
+
 
 	print "</table>\n";
 	print "</div>";
@@ -4524,7 +4532,7 @@ else if ($id > 0 || ! empty($ref))
 	}
 	if ($action != 'prerelance' && $action != 'presend')
 	{
-		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<div class="fichecenter" style="margin-top:100px;"><div class="fichehalfleft">';
 		print '<a name="builddoc"></a>'; // ancre
 
 		// Documents generes
@@ -4581,3 +4589,25 @@ else if ($id > 0 || ! empty($ref))
 
 llxFooter();
 $db->close();
+//popup para productos
+?>
+
+<script type='text/javascript' src='../../funciones.js'></script>
+
+
+<div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);">
+            
+    <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
+    <div style="width:60%; height:90%; margin-left:20%; ">
+
+
+        <iframe id="fra_new_product" src='../../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>
+
+
+    </div>
+    
+
+</div>
+<script>
+    document.getElementById('nuevo_producto').style.display='none';
+</script>

@@ -1181,11 +1181,13 @@ if ($id > 0)
     		print '<div class="inline-block divButAction"><a class="butAction" href="'.DOL_URL_ROOT.'/commande/card.php?socid='.$object->id.'&amp;action=create">'.$langs->trans("AddOrder").'</a></div>';
     	}
 
+    	/*
     	if ($user->rights->contrat->creer && $object->status==1)
     	{
     		$langs->load("contracts");
     		print '<div class="inline-block divButAction"><a class="butAction" href="'.DOL_URL_ROOT.'/contrat/card.php?socid='.$object->id.'&amp;action=create">'.$langs->trans("AddContract").'</a></div>';
     	}
+    	*/
 
     	if (! empty($conf->ficheinter->enabled) && $user->rights->ficheinter->creer && $object->status==1)
     	{
