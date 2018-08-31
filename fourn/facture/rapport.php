@@ -31,6 +31,8 @@ $socid='';
 if (! empty($user->societe_id)) $socid=$user->societe_id;
 $result = restrictedArea($user, 'fournisseur', $id, 'facture_fourn', 'facture');
 
+$langs->loadLangs(array('bills');
+
 $action=GETPOST('action','aZ09');
 
 $socid=0;

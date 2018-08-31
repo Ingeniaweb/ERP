@@ -76,6 +76,7 @@ $object_statut=$db->escape(GETPOST('supplier_proposal_statut'));
 
 $sall=trim((GETPOST('search_all', 'alphanohtml')!='')?GETPOST('search_all', 'alphanohtml'):GETPOST('sall', 'alphanohtml'));
 $mesg=(GETPOST("msg") ? GETPOST("msg") : GETPOST("mesg"));
+
 $year=GETPOST("year");
 $month=GETPOST("month");
 $yearvalid=GETPOST("yearvalid");
@@ -93,6 +94,73 @@ if (! $sortfield) $sortfield='sp.date_livraison';
 if (! $sortorder) $sortorder='DESC';
 
 if ($object_statut != '') $search_status=$object_statut;
+
+
+//fecha_sp_ini =checbox para filtrar o no por la fecha de inicio, campo: date_valid
+// fecha_sp_inicio= fecha_solicitud en base de datos
+// fecha_sp_fin = date_entrega en base de datos
+$fecha_sp_ini=GETPOST('fecha_sp_ini','alpha');
+$search_date_sp_ini=GETPOST('search_date_sp_ini','alpha');
+$search_date_sp_fin=GETPOST('search_date_sp_fin','alpha');
+//fecha_sp_fin=checbox para filtrar o no por la fecha de fin campo: date_livraison
+$fecha_sp_fin=GETPOST('fecha_sp_fin','alpha');
+$search_date_sp_lim_ini=GETPOST('search_date_sp_lim_ini','alpha');
+$search_date_sp_lim_fin=GETPOST('search_date_sp_lim_fin','alpha');
+
+if(empty($search_date_sp_ini) || $search_date_sp_ini==''){
+	$search_date_sp_ini=date('Y-m')."-01";
+	
+	$mon = date('m');
+    $ye = date('Y');
+    $da = date("d", mktime(0,0,0, $mon+1, 0, $ye));
+	$search_date_sp_fin=date('Y-m').'-'.$da;
+}
+if(empty($search_date_sp_lim_ini) || $search_date_sp_lim_ini==''){
+	$search_date_sp_lim_ini=date('Y-m')."-01";
+	
+	$mon = date('m');
+    $ye = date('Y');
+    $da = date("d", mktime(0,0,0, $mon+1, 0, $ye));
+	$search_date_sp_lim_fin=date('Y-m').'-'.$da;
+	
+}
+
+
+
+
+//fecha_ini =checbox para filtrar o no por la fecha de la solicitud
+// fecha_inicio= fecha_solicitud en base de datos
+// fecha_fin = date_entrega en base de datos
+$fecha_ini=GETPOST('fecha_ini','alpha');
+$search_date_ini=GETPOST('search_date_ini','alpha');
+$search_date_fin=GETPOST('search_date_fin','alpha');
+//fecha_fin=checbox para filtrar o no por la fecha de vencimiento
+$fecha_fin=GETPOST('fecha_fin','alpha');
+$search_date_lim_ini=GETPOST('search_date_lim_ini','alpha');
+$search_date_lim_fin=GETPOST('search_date_lim_fin','alpha');
+
+//print " Valor search_date_ini: ".$search_date_ini." , search_date_fin: ".$search_date_fin." , search_date_lim_ini: ".$search_date_lim_ini."  search_date_lim_fin: - ".$search_date_lim_fin;
+if(empty($search_date_ini) || $search_date_ini==''){
+	$search_date_ini=date('Y-m')."-01";
+	
+	$mon = date('m');
+    $ye = date('Y');
+    $da = date("d", mktime(0,0,0, $mon+1, 0, $ye));
+	$search_date_fin=date('Y-m').'-'.$da;
+}
+if(empty($search_date_lim_ini) || $search_date_lim_ini==''){
+	$search_date_lim_ini=date('Y-m')."-01";
+	
+	$mon = date('m');
+    $ye = date('Y');
+    $da = date("d", mktime(0,0,0, $mon+1, 0, $ye));
+	$search_date_lim_fin=date('Y-m').'-'.$da;
+	
+}
+
+
+
+
 
 // Nombre de ligne pour choix de produit/service predefinis
 $NBLINES=4;
@@ -203,6 +271,24 @@ if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x',
 	$month='';
 	$search_status='';
 	$object_statut='';
+
+	//fechas
+	$fecha_sp_ini='';
+	$search_date_sp_ini='';
+	$search_date_sp_fin='';
+	$fecha_sp_fin='';
+	$search_date_sp_lim_ini='';
+	$search_date_sp_lim_fin='';
+
+
+
+	//fechas extra
+	$fecha_ini='';
+	$search_date_ini='';
+	$search_date_fin='';
+	$fecha_fin='';
+	$search_date_lim_ini='';
+	$search_date_lim_fin='';
 }
 
 if (empty($reshook))
@@ -286,6 +372,8 @@ if ($search_montant_ttc != '') $sql.= natural_search("sp.total", $search_montant
 if ($sall) $sql .= natural_search(array_keys($fieldstosearchall), $sall);
 if ($socid) $sql.= ' AND s.rowid = '.$socid;
 if ($search_status >= 0 && $search_status != '') $sql.= ' AND sp.fk_statut IN ('.$db->escape($search_status).')';
+
+//fechas código que no se va a utilizar que controla dos cajas de texto para la fecha una para el mes y otra para el año
 if ($month > 0)
 {
 	if ($year > 0 && empty($day))
@@ -312,11 +400,49 @@ else if ($yearvalid > 0)
 {
 	$sql.= " AND sp.date_valid BETWEEN '".$db->idate(dol_get_first_day($yearvalid,1,false))."' AND '".$db->idate(dol_get_last_day($yearvalid,12,false))."'";
 }
+
+//fechas con input type date
+//**************************************************************************************************************************************
+if($search_date_sp_ini!='' && $fecha_sp_ini=='checked'){
+
+	$sql.= " AND sp.date_valid  >= '".$search_date_sp_ini."' AND sp.date_valid <='".$search_date_sp_fin."'";
+}
+
+if($search_date_sp_lim_ini!='' && $fecha_sp_fin=='checked'){
+
+	$sql.= " AND sp.date_livraison >= '".$search_date_sp_lim_ini."' AND sp.date_livraison <='".$search_date_sp_lim_fin."'";
+}
+
+//****************************************************************************************************************************************
+
+
+
+
 if ($search_sale > 0) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$search_sale;
 if ($search_user > 0)
 {
 	$sql.= " AND c.fk_c_type_contact = tc.rowid AND tc.element='supplier_proposal' AND tc.source='internal' AND c.element_id = sp.rowid AND c.fk_socpeople = ".$search_user;
 }
+
+
+// fechas de inicio y fin para fecha solicitud y fecha entrega 
+//****************************************************************************************************************************************
+if($search_date_ini!='' && $fecha_ini=='checked'){
+
+	$sql.= " AND ef.fecha_solicitud  >= '".$search_date_ini." 00:00' AND ef.fecha_solicitud <='".$search_date_fin." 23:59'";
+}
+
+if($search_date_lim_ini!='' && $fecha_fin=='checked'){
+
+	$sql.= " AND ef.date_entrega >= '".$search_date_lim_ini."' AND ef.date_entrega <='".$search_date_lim_fin."'";
+}
+//****************************************************************************************************************************************
+
+
+//print $sql;
+
+
+
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
@@ -374,6 +500,25 @@ if ($resql)
 	if ($search_zip)		 $param.='&search_zip='.$search_zip;
 	if ($socid > 0)          $param.='&socid='.$socid;
 	if ($search_status != '') $param.='&search_status='.$search_status;
+	//fechas
+	if ($fecha_sp_ini)			 $param.='&fecha_sp_ini=' .urlencode($fecha_sp_ini);
+	if ($search_date_sp_ini)	 $param.='&search_date_sp_ini=' .urlencode($search_date_sp_ini);
+	if ($search_date_sp_fin)	 $param.='&search_date_sp_fin=' .urlencode($search_date_sp_fin);
+	if ($fecha_sp_fin)	 		 $param.='&fecha_sp_fin=' .urlencode($fecha_sp_fin);
+	if ($search_date_sp_lim_ini)	 $param.='&search_date_sp_lim_ini=' .urlencode($search_date_sp_lim_ini);
+	if ($search_date_sp_lim_fin)	 $param.='&search_date_sp_lim_fin=' .urlencode($search_date_sp_lim_fin);
+
+	//fechas extra
+	if ($fecha_ini)			 $param.='&fecha_ini=' .urlencode($fecha_ini);
+	if ($search_date_ini)	 $param.='&search_date_ini=' .urlencode($search_date_ini);
+	if ($search_date_fin)	 $param.='&search_date_fin=' .urlencode($search_date_fin);
+	if ($fecha_fin)	 		 $param.='&fecha_fin=' .urlencode($fecha_fin);
+	if ($search_date_lim_ini)	 $param.='&search_date_lim_ini=' .urlencode($search_date_lim_ini);
+	if ($search_date_lim_fin)	 $param.='&search_date_lim_fin=' .urlencode($search_date_lim_fin);
+
+
+
+
 	if ($optioncss != '') $param.='&optioncss='.$optioncss;
 	// Add $param from extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
@@ -459,6 +604,7 @@ if ($resql)
 	if ($massactionbutton) $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
 
 	print '<div class="div-table-responsive">';
+	print '<style>input{padding: 1px !important;</style>';
 	print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 
 	print '<tr class="liste_titre_filter">';
@@ -498,14 +644,17 @@ if ($resql)
 		print '</td>';
 	}
 	// Date
+	//*********************************************************************************************************************************************************
 	if (! empty($arrayfields['sp.date_valid']['checked']))
 	{
 		print '<td class="liste_titre" colspan="1" align="center">';
 		//print $langs->trans('Month').': ';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="monthvalid" value="'.$monthvalid.'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="monthvalid" value="'.$monthvalid.'">';
 		//print '&nbsp;'.$langs->trans('Year').': ';
-		$syearvalid = $yearvalid;
-		$formother->select_year($syearvalid,'yearvalid',1, 20, 5);
+		//$syearvalid = $yearvalid;
+		//$formother->select_year($syearvalid,'yearvalid',1, 20, 5);
+		$formother->select_date($search_date_sp_ini?$search_date_sp_ini:-1,$search_date_sp_fin?$search_date_sp_fin:-1,'search_date_sp',1, 20, 5, 0, 0, '', 'width75');
+
 		print '</td>';
 	}
 	// Date
@@ -513,12 +662,19 @@ if ($resql)
 	{
 		print '<td class="liste_titre" colspan="1" align="center">';
 		//print $langs->trans('Month').': ';
-		print '<input class="flat" type="text" size="1" maxlength="2" name="month" value="'.$month.'">';
+		//print '<input class="flat" type="text" size="1" maxlength="2" name="month" value="'.$month.'">';
 		//print '&nbsp;'.$langs->trans('Year').': ';
-		$syear = $year;
-		$formother->select_year($syear,'year',1, 20, 5);
+		//$syear = $year;
+		//$formother->select_year($syear,'year',1, 20, 5);
+		$formother->select_date($search_date_sp_lim_ini?$search_date_sp_lim_ini:-1,$search_date_sp_lim_fin?$search_date_sp_lim_fin:-1,'search_date_sp_lim',1, 20, 5, 0, 0, '', 'width75');
+
 		print '</td>';
 	}
+
+
+
+
+	
 
 	if (! empty($arrayfields['sp.total_ht']['checked']))
 	{
@@ -548,6 +704,26 @@ if ($resql)
 		print '<input class="flat" size="4" type="text" name="search_login" value="'.$search_author.'">';
 		print '</td>';
 	}
+	//var_dump($arrayfields);
+
+
+	//Fechas incluidas como campos extra.
+	//*********************************************************************************************************************************************************
+	if(! empty($arrayfields['ef.fecha_solicitud']['checked'])){
+		print '<td class="liste_titre nowraponall" align="center">';
+		$formother->select_date($search_date_ini?$search_date_ini:-1,$search_date_fin?$search_date_fin:-1,'search_date',1, 20, 5, 0, 0, '', 'width75');
+		print '</td>';
+	}
+
+	if(! empty($arrayfields['ef.date_entrega']['checked'])){
+		print '<td class="liste_titre nowraponall" align="center">';
+		$formother->select_date($search_date_lim_ini?$search_date_lim_ini:-1,$search_date_lim_fin?$search_date_lim_fin:-1,'search_date_lim',1, 20, 5, 0, 0, '', 'width75');
+		print '</td>';
+	}
+	//*********************************************************************************************************************************************************
+
+
+
 	// Extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
 	// Fields from hook
@@ -590,12 +766,66 @@ if ($resql)
 	if (! empty($arrayfields['state.nom']['checked']))        print_liste_field_titre($arrayfields['state.nom']['label'],$_SERVER["PHP_SELF"],"state.nom","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['country.code_iso']['checked'])) print_liste_field_titre($arrayfields['country.code_iso']['label'],$_SERVER["PHP_SELF"],"country.code_iso","",$param,'align="center"',$sortfield,$sortorder);
 	if (! empty($arrayfields['typent.code']['checked']))      print_liste_field_titre($arrayfields['typent.code']['label'],$_SERVER["PHP_SELF"],"typent.code","",$param,'align="center"',$sortfield,$sortorder);
-	if (! empty($arrayfields['sp.date_valid']['checked']))      print_liste_field_titre($arrayfields['sp.date_valid']['label'],$_SERVER["PHP_SELF"],'sp.date_valid','',$param, 'align="center"',$sortfield,$sortorder);
-	if (! empty($arrayfields['sp.date_livraison']['checked']))  print_liste_field_titre($arrayfields['sp.date_livraison']['label'],$_SERVER["PHP_SELF"],'sp.date_livraison','',$param, 'align="center"',$sortfield,$sortorder);
+	
+
+
+
+//************************************************************************************************
+	//fechas de inicio y fin
+
+	if (! empty($arrayfields['sp.date_valid']['checked'])){
+	    $enlace="'".$_SERVER['PHP_SELF']."?sortfield=sp.date_valid&sortorder=".$sortorder."&begin='";
+
+		$adicional='<input type="checkbox"  class="reposition"  id="fecha_sp_ini" name="fecha_sp_ini" value="checked" '.$fecha_sp_ini.' title="Señalar para filtrar por la fecha de inicio" onclick="actualizar('.$enlace.')"> ';
+	    print_liste_field_titre($arrayfields['sp.date_valid']['label'],$_SERVER['PHP_SELF'],'sp.date_valid','',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	    
+
+	    // print_liste_field_titre($arrayfields['sp.date_valid']['label'],$_SERVER["PHP_SELF"],'sp.date_valid','',$param, 'align="center"',$sortfield,$sortorder);
+		
+		}
+
+	if (! empty($arrayfields['sp.date_livraison']['checked'])){
+
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=sp.date_livraison&sortorder=".$sortorder."&begin='";
+
+		$adicional= '<input type="checkbox"  class="reposition"  id="fecha_sp_fin" name="fecha_sp_fin" value="checked" '.$fecha_sp_fin.'  title="Señalar para filtrar por la fecha de fin" onclick="actualizar('.$enlace.') "> ';
+		print_liste_field_titre($arrayfields['sp.date_livraison']['label'],$_SERVER['PHP_SELF'],"sp.date_livraison",'',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+
+		//print_liste_field_titre($arrayfields['sp.date_livraison']['label'],$_SERVER["PHP_SELF"],'sp.date_livraison','',$param, 'align="center"',$sortfield,$sortorder);
+	
+	}
+//************************************************************************************************
+	
+
+
 	if (! empty($arrayfields['sp.total_ht']['checked']))        print_liste_field_titre($arrayfields['sp.total_ht']['label'],$_SERVER["PHP_SELF"],'sp.total_ht','',$param, 'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['sp.total_vat']['checked']))       print_liste_field_titre($arrayfields['sp.total_vat']['label'],$_SERVER["PHP_SELF"],'sp.total_vat','',$param, 'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['sp.total_ttc']['checked']))       print_liste_field_titre($arrayfields['sp.total_ttc']['label'],$_SERVER["PHP_SELF"],'sp.total_ttc','',$param, 'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['u.login']['checked']))            print_liste_field_titre($arrayfields['u.login']['label'],$_SERVER["PHP_SELF"],'u.login','',$param,'align="center"',$sortfield,$sortorder);
+	
+
+
+	
+	//************************************************************************************************
+	//fechas de solicitud y entrega
+
+	if (! empty($arrayfields['ef.fecha_solicitud']['checked'])) {
+		$enlace="'".$_SERVER['PHP_SELF']."?sortfield=ef.fecha_solicitud&sortorder=".$sortorder."&begin='";
+
+		$adicional='<input type="checkbox"  class="reposition"  id="fecha_ini" name="fecha_ini" value="checked" '.$fecha_ini.' title="Señalar para filtrar por la fecha de solicitud" onclick="actualizar('.$enlace.')"> ';
+	    print_liste_field_titre($arrayfields['ef.fecha_solicitud']['label'],$_SERVER['PHP_SELF'],'ef.fecha_solicitud','',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	}
+	
+	if (! empty($arrayfields['ef.date_entrega']['checked'])){
+
+			$enlace="'".$_SERVER['PHP_SELF']."?sortfield=ef.date_entrega&sortorder=".$sortorder."&begin='";
+
+		$adicional= '<input type="checkbox"  class="reposition"  id="fecha_fin" name="fecha_fin" value="checked" '.$fecha_fin.'  title="Señalar para filtrar por la fecha de entrega" onclick="actualizar('.$enlace.') "> ';
+		print_liste_field_titre($arrayfields['ef.date_entrega']['label'],$_SERVER['PHP_SELF'],"ef.date_entrega",'',$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
+	}
+	//***************************************************************************************************
+
+
 	// Extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
 	// Hook fields
@@ -734,6 +964,11 @@ if ($resql)
 			print "</td>\n";
 			if (! $i) $totalarray['nbfield']++;
 		}
+		
+		
+
+
+
 
 		// Amount HT
 		if (! empty($arrayfields['sp.total_ht']['checked']))
@@ -772,6 +1007,25 @@ if ($resql)
 			print "</td>\n";
 			if (! $i) $totalarray['nbfield']++;
 		}
+//var_dump($obj);
+		//fechas extra
+		if (! empty($arrayfields['ef.fecha_solicitud']['checked']))
+		{
+			print '<td align="center">';
+			print dol_print_date($db->jdate($obj->options_fecha_solicitud), 'day');
+			print "</td>\n";
+			if (! $i) $totalarray['nbfield']++;
+		}
+
+		if (! empty($arrayfields['ef.date_entrega']['checked']))
+		{
+			print '<td align="center">';
+			print dol_print_date($db->jdate($obj->options_date_entrega), 'day');
+			print "</td>\n";
+			if (! $i) $totalarray['nbfield']++;
+		}
+
+
 
 		// Extra fields
 		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
@@ -887,3 +1141,83 @@ else
 // End of page
 llxFooter();
 $db->close();
+
+?>
+
+
+<script>
+	window.onload=function(){
+		//fechas
+		if(document.getElementById('search_date_sp_ini')){
+			if(document.getElementById('fecha_sp_ini').checked){
+				document.getElementById('search_date_sp_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_sp_fin')});
+				document.getElementById('search_date_sp_fin').addEventListener('change',function(){capar_fechas('search_date_sp_ini',this.id)});
+			}
+		}
+		if(document.getElementById('search_date_sp_lim_ini')){
+			if(document.getElementById('fecha_sp_fin').checked){
+				document.getElementById('search_date_sp_lim_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_sp_lim_fin')});
+				document.getElementById('search_date_sp_lim_fin').addEventListener('change',function(){capar_fechas('search_date_sp_lim_ini',this.id)});	
+			}
+		}
+
+		//fechas extra
+		if(document.getElementById('search_date_ini')){
+			if(document.getElementById('fecha_ini').checked){
+				document.getElementById('search_date_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_fin')});
+				document.getElementById('search_date_fin').addEventListener('change',function(){capar_fechas('search_date_ini',this.id)});
+			}
+		}
+		if(document.getElementById('search_date_lim_ini')){
+			if(document.getElementById('fecha_fin').checked){
+				document.getElementById('search_date_lim_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_lim_fin')});
+				document.getElementById('search_date_lim_fin').addEventListener('change',function(){capar_fechas('search_date_lim_ini',this.id)});	
+			}
+		}
+
+
+
+
+	}
+
+	function actualizar(enlace){
+		//fechas
+		var ffa_sp="&fecha_sp_ini=";
+		var fve_sp="&fecha_sp_fin=";
+		var ffai_sp="&search_date_sp_ini="+document.getElementById('search_date_sp_ini').value;
+		var ffaf_sp="&search_date_sp_fin="+document.getElementById('search_date_sp_fin').value;
+		var fvei_sp="&search_date_sp_lim_ini="+document.getElementById('search_date_sp_lim_ini').value;
+		var fvef_sp="&search_date_sp_lim_fin="+document.getElementById('search_date_sp_lim_fin').value;
+		
+
+		if(document.getElementById('fecha_sp_ini').checked) {
+			ffa_sp=ffa_sp+'checked';
+		}
+		if(document.getElementById('fecha_sp_fin').checked){
+			fve_sp=fve_sp+'checked';
+		}
+
+
+
+
+		//fechas extra
+		var ffa="&fecha_ini=";
+		var fve="&fecha_fin=";
+		var ffai="&search_date_ini="+document.getElementById('search_date_ini').value;
+		var ffaf="&search_date_fin="+document.getElementById('search_date_fin').value;
+		var fvei="&search_date_lim_ini="+document.getElementById('search_date_lim_ini').value;
+		var fvef="&search_date_lim_fin="+document.getElementById('search_date_lim_fin').value;
+
+		if(document.getElementById('fecha_ini').checked) {
+			ffa=ffa+'checked';
+		}
+		if(document.getElementById('fecha_fin').checked){
+			fve=fve+'checked';
+		}
+
+
+
+		enlace=enlace+ffa_sp+fve_sp+ffai_sp+ffaf_sp+fvei_sp+fvef_sp+ffa+fve+ffai+ffaf+fvei+fvef;
+		window.location.href=enlace;
+	}
+</script>

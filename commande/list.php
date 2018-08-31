@@ -386,14 +386,14 @@ if ($resql)
 	{
 		$soc = new Societe($db);
 		$soc->fetch($socid);
-		$title = $langs->trans('ListOfOrders') . ' - '.$soc->name;
+		$title = $langs->trans('Pendientes de facturación') . ' - '.$soc->name;
 		if (empty($search_company)) $search_company = $soc->name;
 	}
 	else
 	{
-		$title = $langs->trans('ListOfOrders');
+		$title = $langs->trans('Pendientes de facturación');
 	}
-	if (strval($viewstatut) == '0')
+	/*if (strval($viewstatut) == '0')
 	$title.=' - '.$langs->trans('StatusOrderDraftShort');
 	if ($viewstatut == 1)
 	$title.=' - '.$langs->trans('StatusOrderValidatedShort');
@@ -408,7 +408,7 @@ if ($resql)
 	if ($viewstatut == -2)
 	$title.=' - '.$langs->trans('StatusOrderToProcessShort');
 	if ($viewstatut == -3)
-	$title.=' - '.$langs->trans('StatusOrderValidated').', '.(empty($conf->expedition->enabled)?'':$langs->trans("StatusOrderSent").', ').$langs->trans('StatusOrderToBill');
+	$title.=' - '.$langs->trans('StatusOrderValidated').', '.(empty($conf->expedition->enabled)?'':$langs->trans("StatusOrderSent").', ').$langs->trans('StatusOrderToBill');*/
 
 	$num = $db->num_rows($resql);
 

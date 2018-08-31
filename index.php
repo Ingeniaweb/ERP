@@ -117,12 +117,29 @@ $langs->load("contracts");
 
 if (empty($user->societe_id))
 {
+	print '<script>
+				function mostrar_stats(){
+					$("#stadistics_box").slideToggle();	
+					var clase = $("#arrow_stats").attr("class");
+
+					if(clase.indexOf("up") == -1 ){
+						$("#arrow_stats").removeClass("fa fa-caret-down");
+						$("#arrow_stats").addClass("fa fa-caret-up");
+					}
+					else{
+						$("#arrow_stats").removeClass("fa fa-caret-up");
+						$("#arrow_stats").addClass("fa fa-caret-down");
+					}
+				}				
+		   </script>';
+
     $boxstat.='<div class="box">';
     $boxstat.='<table summary="'.dol_escape_htmltag($langs->trans("DolibarrStateBoard")).'" class="noborder boxtable boxtablenobottom nohover" width="100%">';
     $boxstat.='<tr class="liste_titre">';
-    $boxstat.='<th class="liste_titre">'.$langs->trans("DolibarrStateBoard").'</th>';
+    $boxstat.='<th class="liste_titre" style="width: 100%;">'.$langs->trans("DolibarrStateBoard").'</th>';
+	$boxstat.='<th class="liste_titre" style="float:right;"><span title="Mostrar/Ocultar" onclick="mostrar_stats()"><i style="cursor: pointer;"id="arrow_stats" class="fa fa-caret-down"></span></th>';
     $boxstat.='</tr>';
-    $boxstat.='<tr class="impair"><td class="tdboxstats nohover flexcontainer">';
+    $boxstat.='<tr class="impair"><td class="tdboxstats nohover flexcontainer" id="stadistics_box" style="display: none;">';
 
     $object=new stdClass();
     $parameters=array();
@@ -529,10 +546,28 @@ foreach($valid_dashboardlines as $board)
 if(!empty($conf->global->MAIN_USE_METEO_WITH_PERCENTAGE)) $totallate = round($totallate / $totaltodo * 100, 2);
 //var_dump($totallate);
 $boxwork='';
+
+print '<script>
+	function ocultar(){
+		$("#ind_work").slideToggle();	
+		var clase = $("#arrow").attr("class");
+
+		if(clase.indexOf("up") == -1 ){
+			$("#arrow").removeClass("fa fa-caret-down");
+			$("#arrow").addClass("fa fa-caret-up");
+			//$("arrow").attr("class", "fa fa-caret-up");
+		}
+		else{
+			$("#arrow").removeClass("fa fa-caret-up");
+			$("#arrow").addClass("fa fa-caret-down");
+		}
+	}
+</script>';
 $boxwork.='<div class="box">';
 $boxwork.='<table summary="'.dol_escape_htmltag($langs->trans("WorkingBoard")).'" class="noborder boxtable boxtablenobottom boxworkingboard" width="100%">'."\n";
 $boxwork.='<tr class="liste_titre">';
-$boxwork.='<th class="liste_titre">'.$langs->trans("DolibarrWorkBoard").'</th>';
+$boxwork.='<th class="liste_titre" style="width: 100%;">'.$langs->trans("DolibarrWorkBoard").'</th>';
+$boxwork.='<th class="liste_titre" style="float:right;"><span title="Mostrar/Ocultar" onclick="ocultar()"><i style="cursor: pointer;" id="arrow" class="fa fa-caret-down"></span></th>';
 $boxwork.='</tr>'."\n";
 
 if ($showweather)
@@ -553,7 +588,7 @@ if ($showweather)
 $nbworkboardempty=0;
 if (! empty($valid_dashboardlines))
 {
-	$boxwork.='<tr class="nohover"><td class="tdboxstats nohover flexcontainer centpercent">';
+	$boxwork.='<tr class="nohover"><td  id="ind_work" style="display:none;" class="tdboxstats nohover flexcontainer centpercent">';
     foreach($valid_dashboardlines as $board)
     {
         if (empty($board->nbtodo)) $nbworkboardempty++;

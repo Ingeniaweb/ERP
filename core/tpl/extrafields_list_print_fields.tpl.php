@@ -14,7 +14,8 @@ if (! empty($extrafieldsobjectkey))	// New method: $extrafieldsobject can be 'so
 	{
 		foreach($extrafields->attributes[$extrafieldsobjectkey]['label'] as $key => $val)
 		{
-			if (! empty($arrayfields["ef.".$key]['checked']))
+			//print "bucle 1: ".$key." - ";
+			if (! empty($arrayfields["ef.".$key]['checked']) && $key!='fecha_solicitud' && $key!='date_entrega')
 			{
 				$align=$extrafields->getAlignFlag($key, $extrafieldsobjectkey);
 				print '<td';
@@ -48,8 +49,11 @@ else								// Old method
 	{
 		foreach($extrafields->attribute_label as $key => $val)
 		{
-			if (! empty($arrayfields["ef.".$key]['checked']))
+			//print "bucle 2: ".$key." - ";
+			if (! empty($arrayfields["ef.".$key]['checked']) && $key!='fecha_solicitud' && $key!='date_entrega')
 			{
+
+				//print "bucle 2: ".$key." - ";
 				$align=$extrafields->getAlignFlag($key);
 				print '<td';
 				if ($align) print ' align="'.$align.'"';

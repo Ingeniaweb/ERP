@@ -1843,7 +1843,7 @@ $db->close();
 <div id="nuevo_producto" style="display:block; width:100%; height:100%;position:fixed; top:0px; left:0px; text-align:center; z-index:10000; background: rgba(0,0,0,0.5);">
             
     <div style=' float:right; width:100%; text-align:right;padding-top:10px; padding-right:10px;'><i class='fa fa-times fa-2x' style="color:#ffffff; cursor:pointer;" onclick="ver('nuevo_producto')"></i></div>
-    <div style="width:60%; height:90%; margin-left:20%; ">
+    <div style="width:60%; height:90%; margin-left:20%; " id='iframe-dentro'>
 
 
         <iframe id="fra_new_product" src='../product/frame_card_nv.php?leftmenu=product&action=create&type=0' style="width: 100%; height: 100%; background: #ffffff;"></iframe>

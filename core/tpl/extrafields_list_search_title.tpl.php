@@ -12,7 +12,7 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 {
 	foreach($extrafields->attribute_label as $key => $val)
 	{
-		if (! empty($arrayfields["ef.".$key]['checked']))
+		if (!empty($arrayfields["ef.".$key]['checked']) && $key!='fecha_solicitud' && $key!='date_entrega')
 		{
 			$align=$extrafields->getAlignFlag($key);
 			$sortonfield = "ef.".$key;

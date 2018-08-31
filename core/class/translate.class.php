@@ -544,7 +544,7 @@ class Translate
 	{
 		global $db;
 
-		if (! is_string($key)) return 'ErrorBadValueForParamNotAString';	// Avoid multiple errors with code not using function correctly.
+		if (! is_string($key)) return '"Factura o Solicitud"';	// Avoid multiple errors with code not using function correctly.
 
 		$newstr=$key;
 	    if (preg_match('/^Civility([0-9A-Z]+)$/i',$key,$reg))
