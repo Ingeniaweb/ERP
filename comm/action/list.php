@@ -669,3 +669,18 @@ else
 llxFooter();
 
 $db->close();
+?>
+
+<script>
+	window.onload=function(){
+	//realizar búsqueda en el change de los select del formulario de búsqueda
+		
+		var combos=document.forms[0].getElementsByTagName('select');
+		for(i=0;i<combos.length;i++){
+			combos[i].addEventListener('change',function(){
+				document.forms[0].submit();
+				
+			});
+		}
+	}
+</script>

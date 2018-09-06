@@ -600,13 +600,13 @@ if (! empty($arrayfields['t.label']['checked']))         print_liste_field_titre
 if (! empty($arrayfields['t.dateo']['checked'])){
 	$enlace="'".$_SERVER['PHP_SELF']."?sortfield=t.dateo&sortorder=".$sortorder."&begin='";
 
-	$adicional='<input type="checkbox"  class="reposition"  id="fecha_factura" name="fecha_factura" value="checked" '.$fecha_factura.' title="Señalar para filtrar por la fecha de factura" onclick="actualizar('.$enlace.')"> ';
+	$adicional='<input type="checkbox"  class="reposition"  id="fecha_factura" name="fecha_factura" value="checked" '.$fecha_factura.' title="Señalar para filtrar por la fecha de factura" onclick="actualizar('.$enlace.')" data-enlace='.$enlace.'>';
     print_liste_field_titre($arrayfields['t.dateo']['label'],$_SERVER["PHP_SELF"],"t.dateo","",$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
 }
 if (! empty($arrayfields['t.datee']['checked'])){         
 	$enlace="'".$_SERVER['PHP_SELF']."?sortfield=t.datee&sortorder=".$sortorder."&begin='";
 
-	$adicional= '<input type="checkbox"  class="reposition"  id="fecha_vencimiento" name="fecha_vencimiento" value="checked" '.$fecha_vencimiento.'  title="Señalar para filtrar por la fecha de vencimiento" onclick="actualizar('.$enlace.') "> ';
+	$adicional= '<input type="checkbox"  class="reposition"  id="fecha_vencimiento" name="fecha_vencimiento" value="checked" '.$fecha_vencimiento.'  title="Señalar para filtrar por la fecha de vencimiento" onclick="actualizar('.$enlace.') data-enlace='.$enlace.'>';
 		
 	print_liste_field_titre($arrayfields['t.datee']['label'],$_SERVER["PHP_SELF"],"t.datee","",$param,'align="center"',$sortfield,$sortorder,'','',$adicional);
 }
@@ -881,17 +881,53 @@ $db->close();
 <script>
 	window.onload=function(){
 		if(document.getElementById('search_date_ini')){
-			if(document.getElementById('fecha_factura').checked){
 				document.getElementById('search_date_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_fin')});
 				document.getElementById('search_date_fin').addEventListener('change',function(){capar_fechas('search_date_ini',this.id)});
-			}
+				
+				document.getElementById('search_date_ini').addEventListener('change',function(){
+					if(document.getElementById('fecha_factura').checked){
+						var enlace=document.getElementById('fecha_factura').dataset.enlace;
+						actualizar(enlace);
+					}
+				});
+				document.getElementById('search_date_fin').addEventListener('change',function(){
+					if(document.getElementById('fecha_factura').checked){
+						var enlace=document.getElementById('fecha_factura').dataset.enlace;
+						actualizar(enlace);
+					}
+				});
 		}
 		if(document.getElementById('search_date_lim_ini')){
 			if(document.getElementById('fecha_vencimiento').checked){
 				document.getElementById('search_date_lim_ini').addEventListener('change',function(){capar_fechas(this.id,'search_date_lim_fin')});
 				document.getElementById('search_date_lim_fin').addEventListener('change',function(){capar_fechas('search_date_lim_ini',this.id)});	
+
+				document.getElementById('search_date_lim_ini').addEventListener('change',function(){
+					if(document.getElementById('fecha_vencimiento').checked){
+						var enlace=document.getElementById('fecha_vencimiento').dataset.enlace;
+						actualizar(enlace);
+					}
+				});
+				document.getElementById('search_date_lim_fin').addEventListener('change',function(){
+					if(document.getElementById('fecha_vencimiento').checked){
+						var enlace=document.getElementById('fecha_vencimiento').dataset.enlace;
+						actualizar(enlace);
+					}
+				});						
+
 			}
 		}
+
+		//realizar búsqueda en el change de los select del formulario de búsqueda
+		
+		var combos=document.forms[0].getElementsByTagName('select');
+		for(i=0;i<combos.length;i++){
+			combos[i].addEventListener('change',function(){
+				document.forms[0].submit();
+				
+			});
+		}
+
 	}
 
 	function actualizar(enlace){
@@ -909,6 +945,6 @@ $db->close();
 			fve=fve+'checked';
 		}
 		enlace=enlace+ffa+fve+ffai+ffaf+fvei+fvef;
-		window.location.href=enlace;
+		window.location.replace(enlace);
 	}
 </script>

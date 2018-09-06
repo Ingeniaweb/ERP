@@ -816,3 +816,18 @@ if ($num > $limit || $page) print_barre_liste('', $page, $_SERVER["PHP_SELF"], $
 
 llxFooter();
 $db->close();
+?>
+
+<script type="text/javascript">
+	$(function(){
+		//realizar búsqueda en el change de los select del formulario de búsqueda
+		
+		var combos=document.forms[0].getElementsByTagName('select');
+		for(i=0;i<combos.length;i++){
+			combos[i].addEventListener('change',function(){
+				document.forms[0].submit();
+				
+			});
+		}
+	});
+</script>
