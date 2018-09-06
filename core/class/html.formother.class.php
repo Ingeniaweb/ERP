@@ -947,8 +947,8 @@ class FormOther
     /**
      *  Return HTML combo list of years
      *
-     *  @param  string  $selected       Preselected value (''=current year, -1=none, year otherwise)
-     *  @param  string  $selectedf      Valor preseleccionado de fecha fin
+     *  @param  string  $selected       Fecha de inicio
+     *  @param  string  $selectedf      Fecha de finalizacion
      *  @param  string  $htmlname       Name of HTML select object
      *  @param  int     $useempty       Affiche valeur vide dans liste
      *  @param  int     $min_year       Offset of minimum year into list (by default current year -10)
@@ -981,9 +981,9 @@ class FormOther
 
         //$out.= '<div class="'.($morecss?' '.$morecss:'').'" style="width:auto;" id="div_' . $htmlname . '" name="div_' . $htmlname . '"></div>';
         
-        $out.= '<span style="font-size:0.9em;color:#fff;">Desde </span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_ini" name="' . $htmlname . '_ini" '.$option.' min="'.$min_year.'" max="'.$max_year.'" value="'.$selected.'"><br>';
+        $out.= '<span style="font-size:0.9em;color:#fff;">Desde </span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_ini" name="' . $htmlname . '_ini" '.$option.' min="'.$min_year.'" max="'.$min_yearf.'" value="'.$selected.'"><br>';
 
-        $out.= '<span style="font-size:0.9em;color:#fff;">Hasta &nbsp;</span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_fin" name="' . $htmlname . '_fin" '.$option.' min="'.$min_yearf.'" max="'.$max_yearf.'" value="'.$selectedf.'">';
+        $out.= '<span style="font-size:0.9em;color:#fff;">Hasta &nbsp;</span><input type="date" class="'.($morecss?' '.$morecss:'').'" style="width:auto; font-size:0.8em; height: 20px;" id="' . $htmlname . '_fin" name="' . $htmlname . '_fin" '.$option.' min="'.$max_year.'" max="'.$max_yearf.'" value="'.$selectedf.'">';
         
         //$out.= '<input class="inputDate '.($morecss?' '.$morecss:'').'" id="'.$htmlname.'" name="' . $htmlname . '"'.$option.' min="'.$min_year.'" max="'.$max_year.'" value="'.$selected.'">';
         //$out.= "</select>\n";
